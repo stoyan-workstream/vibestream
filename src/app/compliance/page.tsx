@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { ShieldAlert, DollarSign, Sparkles, Lock, Unlock, Mail, Phone } from "lucide-react";
 
 // Sample data
@@ -61,6 +61,9 @@ interface ComplianceIssue {
   detail: string;
   potentialFine: number;
   status: "open" | "in_review" | "resolved";
+  resolvedBy?: string;
+  resolvedDate?: string;
+  resolutionComment?: string;
 }
 
 // Compliance rules data
@@ -807,86 +810,175 @@ const HeatmapCard = ({ title, rows, columns, data, finesData }: HeatmapCardProps
 
 interface IssueCardProps {
   issue: ComplianceIssue;
-  onResolve: (id: string) => void;
+  onResolve: (id: string, comment: string) => void;
   onMarkInReview: (id: string) => void;
 }
 
+const BellIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+  </svg>
+);
+
+const XIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+  </svg>
+);
+
 const IssueCard = ({ issue, onResolve, onMarkInReview }: IssueCardProps) => {
   const [expanded, setExpanded] = useState(false);
+  const [showResolvePopup, setShowResolvePopup] = useState(false);
+  const [showReminderPopup, setShowReminderPopup] = useState(false);
+  const [comment, setComment] = useState('');
+  const [reminderDate, setReminderDate] = useState('');
+  const [reminderTime, setReminderTime] = useState('09:00');
+
+  const handleResolve = () => {
+    onResolve(issue.id, comment);
+    setShowResolvePopup(false);
+    setComment('');
+  };
+
+  const handleSetReminder = () => {
+    // In a real app, this would save the reminder
+    alert(`Reminder set for ${reminderDate} at ${reminderTime}`);
+    setShowReminderPopup(false);
+    setReminderDate('');
+  };
 
   return (
-    <div className={`bg-white rounded-xl border border-gray-200 p-5 transition-all ${
-      issue.status === "resolved" ? "opacity-60" : ""
+    <div className={`bg-white rounded-xl border border-gray-200 p-4 transition-all ${
+      issue.status === "resolved" ? "opacity-80" : ""
     }`}>
-      {/* Header */}
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1 min-w-0">
-          {/* Worker and Location - Primary Info */}
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-medium text-sm flex-shrink-0">
-              {issue.worker.split(' ').map(n => n[0]).join('')}
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-900">{issue.worker}</h3>
-              <div className="flex items-center gap-1.5 text-sm text-gray-500">
-                <LocationIcon />
-                <span>{issue.location}</span>
-              </div>
-            </div>
+      {/* Main Row */}
+      <div className="flex items-center gap-4">
+        {/* Avatar */}
+        <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-700 font-medium text-sm flex-shrink-0">
+          {issue.worker.split(' ').map(n => n[0]).join('')}
+        </div>
+
+        {/* Worker & Location */}
+        <div className="min-w-[140px]">
+          <h3 className="font-semibold text-gray-900">{issue.worker}</h3>
+          <div className="flex items-center gap-1 text-sm text-gray-600">
+            <LocationIcon />
+            <span>{issue.location}</span>
           </div>
+        </div>
 
-          {/* Issue Details */}
-          <div className="mt-4 ml-13 pl-0.5">
-            {/* Rule name and badges */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className={`px-2 py-0.5 rounded text-xs font-medium ${getCategoryStyle(issue.category)}`}>
-                {issue.category}
-              </span>
-              <span className="flex items-center gap-1 text-xs">
-                <span className={`w-2 h-2 rounded-full ${
-                  issue.riskLevel === "high" ? "bg-red-500" : 
-                  issue.riskLevel === "medium" ? "bg-amber-500" : "bg-green-500"
-                }`} />
-                <span className="text-gray-500 capitalize">{issue.riskLevel}</span>
-              </span>
-              <span className="text-xs text-gray-400">·</span>
-              <span className="text-xs text-gray-400">{issue.reportDate}</span>
-            </div>
-
-            {/* Rule name */}
-            <p className="mt-2 text-sm font-medium text-gray-700">{issue.ruleName}</p>
-
-            {/* Summary */}
-            <p className="mt-1 text-sm text-gray-500">{issue.summary}</p>
-
-            {/* Expandable detail */}
-            {expanded && (
-              <p className="mt-3 text-sm text-gray-500 leading-relaxed bg-gray-50 rounded-lg p-3">
-                {issue.detail}
-              </p>
-            )}
-
+        {/* Rule name with category inline - flexible middle */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-medium text-gray-800 truncate">{issue.ruleName}</p>
+            <span className={`px-2 py-0.5 rounded text-xs font-medium flex-shrink-0 ${getCategoryStyle(issue.category)}`}>
+              {issue.category}
+            </span>
+          </div>
+          <p className="text-sm text-gray-600">
+            <span className="truncate">{issue.summary}</span>
             <button
               onClick={() => setExpanded(!expanded)}
-              className="mt-2 text-sm text-gray-400 hover:text-gray-600 transition-colors"
+              className="text-gray-500 hover:text-gray-800 transition-colors ml-2"
             >
               {expanded ? "Show less" : "Show more"}
             </button>
-          </div>
+          </p>
         </div>
 
         {/* Fine amount */}
         <div className="text-right flex-shrink-0">
-          <p className="text-xs text-gray-400">Potential Fine</p>
-          <p className="text-xl font-semibold text-gray-900">${issue.potentialFine.toLocaleString()}</p>
+          <p className="text-xs text-gray-500">Potential Fine</p>
+          <p className="text-lg font-semibold text-gray-900">${issue.potentialFine.toLocaleString()}</p>
         </div>
       </div>
 
+      {/* Expandable detail */}
+      {expanded && (
+        <p className="mt-3 text-sm text-gray-600 leading-relaxed bg-gray-50 rounded-lg p-3">
+          {issue.detail}
+        </p>
+      )}
+
       {/* Actions */}
-      <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+      <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
+        <div className="flex flex-col gap-1">
+          <span className="flex items-center gap-1 text-xs text-gray-500">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            {issue.reportDate}
+          </span>
+          {issue.status === "resolved" && issue.resolvedBy && (
+            <div className="flex flex-col gap-1 mt-1">
+              <span className="text-xs text-gray-600">
+                Resolved by <span className="font-medium">{issue.resolvedBy}</span> on {issue.resolvedDate}
+              </span>
+              {issue.resolutionComment && (
+                <span className="text-xs text-gray-600 italic">
+                  &ldquo;{issue.resolutionComment}&rdquo;
+                </span>
+              )}
+              <span className="flex items-center gap-1.5 px-2 py-1 text-xs text-green-600 bg-green-50 rounded w-fit mt-1">
+                <CheckIcon />
+                Resolved
+              </span>
+            </div>
+          )}
+        </div>
         <div className="flex items-center gap-2">
           {issue.status === "open" && (
             <>
+              <div className="relative">
+                <button
+                  onClick={() => setShowReminderPopup(!showReminderPopup)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <BellIcon />
+                  Remind
+                </button>
+                {/* Reminder Popup */}
+                {showReminderPopup && (
+                  <>
+                    <div 
+                      className="fixed inset-0 z-40"
+                      onClick={() => setShowReminderPopup(false)}
+                    />
+                    <div className="absolute left-0 bottom-full mb-2 w-64 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
+                      <div className="p-4 space-y-3">
+                        <p className="text-sm font-medium text-gray-700">Set a reminder</p>
+                        <div className="space-y-2">
+                          <div>
+                            <label className="block text-xs text-gray-500 mb-1">Date</label>
+                            <input
+                              type="date"
+                              value={reminderDate}
+                              onChange={(e) => setReminderDate(e.target.value)}
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs text-gray-500 mb-1">Time</label>
+                            <input
+                              type="time"
+                              value={reminderTime}
+                              onChange={(e) => setReminderTime(e.target.value)}
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+                            />
+                          </div>
+                        </div>
+                        <button
+                          onClick={handleSetReminder}
+                          disabled={!reminderDate}
+                          className="w-full py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          Set Reminder
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
               <button
                 onClick={() => onMarkInReview(issue.id)}
                 className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
@@ -894,36 +986,294 @@ const IssueCard = ({ issue, onResolve, onMarkInReview }: IssueCardProps) => {
                 <ClockIcon />
                 Mark In Review
               </button>
-              <button
-                onClick={() => onResolve(issue.id)}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-900 bg-gray-900 text-white hover:bg-gray-800 rounded-lg transition-colors"
-              >
-                <CheckIcon />
-                Resolve
-              </button>
+              <div className="relative">
+                <button
+                  onClick={() => setShowResolvePopup(!showResolvePopup)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-gray-900 text-white hover:bg-gray-800 rounded-lg transition-colors"
+                >
+                  <CheckIcon />
+                  Resolve
+                </button>
+                {/* Resolve Popup */}
+                {showResolvePopup && (
+                  <>
+                    <div 
+                      className="fixed inset-0 z-40"
+                      onClick={() => setShowResolvePopup(false)}
+                    />
+                    <div className="absolute right-0 bottom-full mb-2 w-72 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
+                      <div className="p-4 space-y-3">
+                        <label className="block text-sm font-medium text-gray-700">
+                          Add a comment (optional)
+                        </label>
+                        <textarea
+                          value={comment}
+                          onChange={(e) => setComment(e.target.value)}
+                          placeholder="Describe how this was resolved..."
+                          rows={2}
+                          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent resize-none"
+                        />
+                        <button
+                          onClick={handleResolve}
+                          className="w-full flex items-center justify-center gap-1.5 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors"
+                        >
+                          <CheckIcon />
+                          Confirm Resolution
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
             </>
           )}
           {issue.status === "in_review" && (
             <>
+              <div className="relative">
+                <button
+                  onClick={() => setShowReminderPopup(!showReminderPopup)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <BellIcon />
+                  Remind
+                </button>
+                {showReminderPopup && (
+                  <>
+                    <div 
+                      className="fixed inset-0 z-40"
+                      onClick={() => setShowReminderPopup(false)}
+                    />
+                    <div className="absolute left-0 bottom-full mb-2 w-64 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
+                      <div className="p-4 space-y-3">
+                        <p className="text-sm font-medium text-gray-700">Set a reminder</p>
+                        <div className="space-y-2">
+                          <div>
+                            <label className="block text-xs text-gray-500 mb-1">Date</label>
+                            <input
+                              type="date"
+                              value={reminderDate}
+                              onChange={(e) => setReminderDate(e.target.value)}
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs text-gray-500 mb-1">Time</label>
+                            <input
+                              type="time"
+                              value={reminderTime}
+                              onChange={(e) => setReminderTime(e.target.value)}
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+                            />
+                          </div>
+                        </div>
+                        <button
+                          onClick={handleSetReminder}
+                          disabled={!reminderDate}
+                          className="w-full py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          Set Reminder
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
               <span className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-amber-600 bg-amber-50 rounded-lg">
                 <ClockIcon />
                 In Review
               </span>
-              <button
-                onClick={() => onResolve(issue.id)}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-900 bg-gray-900 text-white hover:bg-gray-800 rounded-lg transition-colors"
-              >
-                <CheckIcon />
-                Resolve
-              </button>
+              <div className="relative">
+                <button
+                  onClick={() => setShowResolvePopup(!showResolvePopup)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-gray-900 text-white hover:bg-gray-800 rounded-lg transition-colors"
+                >
+                  <CheckIcon />
+                  Resolve
+                </button>
+                {showResolvePopup && (
+                  <>
+                    <div 
+                      className="fixed inset-0 z-40"
+                      onClick={() => setShowResolvePopup(false)}
+                    />
+                    <div className="absolute right-0 bottom-full mb-2 w-72 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
+                      <div className="p-4 space-y-3">
+                        <label className="block text-sm font-medium text-gray-700">
+                          Add a comment (optional)
+                        </label>
+                        <textarea
+                          value={comment}
+                          onChange={(e) => setComment(e.target.value)}
+                          placeholder="Describe how this was resolved..."
+                          rows={2}
+                          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent resize-none"
+                        />
+                        <button
+                          onClick={handleResolve}
+                          className="w-full flex items-center justify-center gap-1.5 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors"
+                        >
+                          <CheckIcon />
+                          Confirm Resolution
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
             </>
           )}
-          {issue.status === "resolved" && (
-            <span className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-green-600 bg-green-50 rounded-lg">
-              <CheckIcon />
-              Resolved
-            </span>
-          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// AI Overview Card with cursor-following gradient
+const AIOverviewCard = () => {
+  const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
+  const [isHovering, setIsHovering] = useState(false);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setMousePos({ x, y });
+  };
+
+  // Border color shifts based on position
+  const borderHue = 210 + (mousePos.x / 100) * 30;
+
+  return (
+    <div 
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => {
+        setIsHovering(false);
+        setMousePos({ x: 50, y: 50 });
+      }}
+      className="relative rounded-xl p-6 mt-8 overflow-hidden bg-white border border-gray-200 transition-colors duration-500"
+      style={{ 
+        borderColor: isHovering ? `hsl(${borderHue}, 60%, 75%)` : undefined,
+      }}
+    >
+      {/* Ambient animated orbs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Blob 1 - top left corner, large cyan - slight cursor react */}
+        <div 
+          className="absolute w-[400px] h-[400px] rounded-full blur-3xl bg-sky-200/25 animate-blob-1"
+          style={{
+            left: `calc(-120px + ${mousePos.x * 0.15}px)`,
+            top: `calc(-120px + ${mousePos.y * 0.15}px)`,
+            transition: 'left 1.5s ease-out, top 1.5s ease-out',
+          }}
+        />
+        {/* Blob 2 - top right, violet - medium cursor react */}
+        <div 
+          className="absolute w-[350px] h-[350px] rounded-full blur-3xl bg-violet-200/20 animate-blob-2"
+          style={{
+            right: `calc(-100px + ${(100 - mousePos.x) * 0.2}px)`,
+            top: `calc(-80px + ${mousePos.y * 0.1}px)`,
+            transition: 'right 1.8s ease-out, top 1.8s ease-out',
+          }}
+        />
+        {/* Blob 3 - bottom right, large indigo - strong cursor react */}
+        <div 
+          className="absolute w-[450px] h-[450px] rounded-full blur-3xl bg-indigo-200/20 animate-blob-3"
+          style={{
+            right: `calc(-150px + ${(100 - mousePos.x) * 0.25}px)`,
+            bottom: `calc(-180px + ${(100 - mousePos.y) * 0.25}px)`,
+            transition: 'right 2s ease-out, bottom 2s ease-out',
+          }}
+        />
+        {/* Blob 4 - bottom left, teal - slight cursor react */}
+        <div 
+          className="absolute w-[300px] h-[300px] rounded-full blur-3xl bg-cyan-200/25 animate-blob-4"
+          style={{
+            left: `calc(-80px + ${mousePos.x * 0.1}px)`,
+            bottom: `calc(-100px + ${(100 - mousePos.y) * 0.15}px)`,
+            transition: 'left 1.6s ease-out, bottom 1.6s ease-out',
+          }}
+        />
+        {/* Blob 5 - wanderer, purple */}
+        <div 
+          className="absolute left-[25%] top-[15%] w-[250px] h-[250px] rounded-full blur-3xl bg-purple-200/20 animate-blob-5"
+        />
+        {/* Blob 6 - small accent, moves a lot */}
+        <div 
+          className="absolute right-[15%] bottom-[25%] w-[180px] h-[180px] rounded-full blur-2xl bg-blue-200/25 animate-blob-6"
+        />
+        
+        {/* Primary cursor glow - follows smoothly */}
+        <div 
+          className="absolute w-[350px] h-[350px] rounded-full blur-3xl"
+          style={{
+            background: 'rgba(56, 189, 248, 0.12)',
+            left: `calc(${mousePos.x}% - 175px)`,
+            top: `calc(${mousePos.y}% - 175px)`,
+            opacity: isHovering ? 0.8 : 0,
+            transition: 'left 0.8s ease-out, top 0.8s ease-out, opacity 0.5s ease-out',
+          }}
+        />
+      </div>
+      
+      <div className="relative flex items-start gap-4">
+        <div className="relative w-10 h-10 flex-shrink-0 rounded-lg overflow-hidden">
+          {/* Rotating gradient border */}
+          <style>{`
+            @keyframes border-spin {
+              from { transform: rotate(0deg); }
+              to { transform: rotate(360deg); }
+            }
+          `}</style>
+          <div 
+            className="absolute"
+            style={{
+              inset: '-50%',
+              background: 'conic-gradient(#60a5fa, #818cf8, #a78bfa, #93c5fd, #6366f1, #60a5fa)',
+              animation: 'border-spin 3s linear infinite',
+            }}
+          />
+          {/* Inner background */}
+          <div className="absolute inset-[2px] rounded-md bg-gradient-to-br from-blue-500 to-indigo-600" />
+          {/* Icon */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Sparkles className="w-5 h-5 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]" style={{ filter: 'drop-shadow(0 0 4px rgba(255,255,255,0.8)) drop-shadow(0 0 8px rgba(147,197,253,0.6))' }} />
+          </div>
+        </div>
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-2">
+            <h3 className="font-semibold text-gray-900">AI Overview</h3>
+            <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 rounded-full">Beta</span>
+          </div>
+          <p className="text-sm text-gray-600 leading-relaxed">
+            You have <span className="font-semibold text-gray-900">17 compliance issues</span> that require attention, 
+            with potential fines totaling <span className="font-semibold text-gray-900">$19,487</span>. 
+            The majority of issues (<span className="font-semibold">65%</span>) are related to <span className="font-semibold text-gray-900">Ready to Work</span> violations, 
+            primarily I-9 form completion delays at your <span className="font-semibold text-gray-900">San Francisco - Market St</span> location.
+          </p>
+          <p className="text-sm text-gray-600 leading-relaxed mt-3">
+            <span className="font-semibold text-amber-600">⚠ Priority:</span> Address the 6 <span className="font-semibold">Time & Pay</span> issues first — 
+            they account for <span className="font-semibold text-gray-900">92% of potential fines</span> ($17,987) and include overtime premium violations 
+            that could escalate if not resolved within the current pay period.
+          </p>
+          <div className="flex items-center justify-between mt-4">
+            <button className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-medium rounded-lg transition-all shadow-md shadow-blue-500/25">
+              View Priority Issues
+            </button>
+            <div className="flex items-center gap-1">
+              <span className="text-xs text-gray-400 mr-2">Was this helpful?</span>
+              <button className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+                </svg>
+              </button>
+              <button className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76.94m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5" />
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1227,9 +1577,17 @@ export default function Compliance() {
   const [rulesFilterStatus, setRulesFilterStatus] = useState<string>("");
   const [selectedRule, setSelectedRule] = useState<ComplianceRule | null>(null);
 
-  const handleResolve = (id: string) => {
+  const handleResolve = (id: string, comment: string) => {
+    const today = new Date();
+    const resolvedDate = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     setIssues(prev => prev.map(issue => 
-      issue.id === id ? { ...issue, status: "resolved" as const } : issue
+      issue.id === id ? { 
+        ...issue, 
+        status: "resolved" as const,
+        resolvedBy: "Current User",
+        resolvedDate,
+        resolutionComment: comment || undefined
+      } : issue
     ));
   };
 
@@ -1427,48 +1785,7 @@ export default function Compliance() {
           </div>
 
           {/* AI Overview */}
-          <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-100 p-6 mt-8">
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0">
-                <Sparkles className="w-5 h-5 text-white" />
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <h3 className="font-semibold text-gray-900">AI Overview</h3>
-                  <span className="px-2 py-0.5 text-xs font-medium bg-indigo-100 text-indigo-700 rounded-full">Beta</span>
-                </div>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  You have <span className="font-semibold text-gray-900">17 compliance issues</span> that require attention, 
-                  with potential fines totaling <span className="font-semibold text-gray-900">$19,487</span>. 
-                  The majority of issues (<span className="font-semibold">65%</span>) are related to <span className="font-semibold text-gray-900">Ready to Work</span> violations, 
-                  primarily I-9 form completion delays at your <span className="font-semibold text-gray-900">San Francisco - Market St</span> location.
-                </p>
-                <p className="text-sm text-gray-600 leading-relaxed mt-3">
-                  <span className="font-semibold text-red-600">⚠ Priority:</span> Address the 6 <span className="font-semibold">Time & Pay</span> issues first — 
-                  they account for <span className="font-semibold text-gray-900">92% of potential fines</span> ($17,987) and include overtime premium violations 
-                  that could escalate if not resolved within the current pay period.
-                </p>
-                <div className="flex items-center justify-between mt-4">
-                  <button className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors">
-                    View Priority Issues
-                  </button>
-                  <div className="flex items-center gap-1">
-                    <span className="text-xs text-gray-400 mr-2">Was this helpful?</span>
-                    <button className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
-                      </svg>
-                    </button>
-                    <button className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76.94m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <AIOverviewCard />
 
           {/* Heatmap */}
           <div className="mt-8">
