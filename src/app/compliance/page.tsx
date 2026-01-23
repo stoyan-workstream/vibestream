@@ -28,6 +28,7 @@ const locations = [
 ];
 const categoryNames = ["Ready to Work", "Time & Pay", "Safety & Claims", "Filing & Reporting"];
 
+// Heatmap data - computed from issues
 const locationHeatmapData: Record<string, Record<string, number>> = {
   "San Francisco - Market St": { "Ready to Work": 5, "Time & Pay": 2, "Safety & Claims": 0, "Filing & Reporting": 0 },
   "San Francisco - Mission District": { "Ready to Work": 3, "Time & Pay": 4, "Safety & Claims": 0, "Filing & Reporting": 0 },
@@ -39,9 +40,9 @@ const locationHeatmapData: Record<string, Record<string, number>> = {
 };
 
 const locationFinesData: Record<string, Record<string, number>> = {
-  "San Francisco - Market St": { "Ready to Work": 2500, "Time & Pay": 9587, "Safety & Claims": 0, "Filing & Reporting": 0 },
-  "San Francisco - Mission District": { "Ready to Work": 1500, "Time & Pay": 6400, "Safety & Claims": 0, "Filing & Reporting": 0 },
-  "Oakland - Downtown": { "Ready to Work": 1000, "Time & Pay": 0, "Safety & Claims": 0, "Filing & Reporting": 0 },
+  "San Francisco - Market St": { "Ready to Work": 1750, "Time & Pay": 9587, "Safety & Claims": 0, "Filing & Reporting": 0 },
+  "San Francisco - Mission District": { "Ready to Work": 1300, "Time & Pay": 2550, "Safety & Claims": 0, "Filing & Reporting": 0 },
+  "Oakland - Downtown": { "Ready to Work": 600, "Time & Pay": 0, "Safety & Claims": 0, "Filing & Reporting": 0 },
   "San Jose - Santana Row": { "Ready to Work": 0, "Time & Pay": 0, "Safety & Claims": 0, "Filing & Reporting": 0 },
   "Palo Alto - University Ave": { "Ready to Work": 500, "Time & Pay": 0, "Safety & Claims": 0, "Filing & Reporting": 0 },
   "Berkeley - Shattuck Ave": { "Ready to Work": 0, "Time & Pay": 0, "Safety & Claims": 0, "Filing & Reporting": 0 },
@@ -423,7 +424,7 @@ const issuesData: ComplianceIssue[] = [
     category: "Time & Pay",
     ruleName: "Minimum Wage for San Francisco 2024",
     riskLevel: "high",
-    location: "Great Main",
+    location: "San Francisco - Market St",
     worker: "Ryan Mason",
     summary: "Rate $17.31 < Min $18.67",
     detail: "For pay period starting 2025-05-19, employee Ryan Mason (San Francisco, CA) had a regular rate of pay of $17.31 per hour (calculated as $1384.62 total straight-time earnings ÷ 80.00 worked hours), which is below the required minimum wage of $18.67 per hour.",
@@ -436,10 +437,10 @@ const issuesData: ComplianceIssue[] = [
     category: "Time & Pay",
     ruleName: "Overtime Premium Violation",
     riskLevel: "high",
-    location: "Great Main",
+    location: "San Francisco - Market St",
     worker: "Harry Salazar",
     summary: "OT 85.00h, Paid $0.00 < Required $3984.37",
-    detail: "For pay period starting 2025-05-18, employee Harry Salazar (SAN DIEGO, CA) worked 125.00 hours over 7 days (125.00 hours per week equivalent), exceeding the 40-hour weekly threshold by 85.00 hours. They were paid an overtime premium of $0.00, but the required premium was $3984.37. This was calculated using an effective rate of $31.25 per hour for 85.00 overtime hours.",
+    detail: "For pay period starting 2025-05-18, employee Harry Salazar worked 125.00 hours over 7 days (125.00 hours per week equivalent), exceeding the 40-hour weekly threshold by 85.00 hours. They were paid an overtime premium of $0.00, but the required premium was $3984.37. This was calculated using an effective rate of $31.25 per hour for 85.00 overtime hours.",
     potentialFine: 8487,
     status: "open",
   },
@@ -449,7 +450,7 @@ const issuesData: ComplianceIssue[] = [
     category: "Ready to Work",
     ruleName: "I-9 Form Completion Violation",
     riskLevel: "high",
-    location: "Great Main",
+    location: "San Francisco - Market St",
     worker: "Sharon Reese",
     summary: "I-9 1 days past deadline",
     detail: "Employee Sharon Reese was hired on 2022-09-05 with an estimated I-9 completion deadline of 2022-09-08. The E-Verify case was created on 2022-09-09, which was 1 days after the deadline. Status: CLOSED. Risk Level: HIGH. Submitted late.",
@@ -462,10 +463,10 @@ const issuesData: ComplianceIssue[] = [
     category: "Time & Pay",
     ruleName: "Overtime Premium Violation",
     riskLevel: "high",
-    location: "Great Main",
+    location: "San Francisco - Mission District",
     worker: "Erik Aguilar",
     summary: "OT 9.06h, Paid $18.56 < Required $224.24",
-    detail: "For pay period starting 2025-04-28, employee Erik Aguilar (Fremont, CA) worked 49.06 hours over 7 days (49.06 hours per week equivalent), exceeding the 40-hour weekly threshold by 9.06 hours. They were paid an overtime premium of $18.56, but the required premium was $224.24. This was calculated using an effective rate of $16.50 per hour for 9.06 overtime hours.",
+    detail: "For pay period starting 2025-04-28, employee Erik Aguilar worked 49.06 hours over 7 days (49.06 hours per week equivalent), exceeding the 40-hour weekly threshold by 9.06 hours. They were paid an overtime premium of $18.56, but the required premium was $224.24. This was calculated using an effective rate of $16.50 per hour for 9.06 overtime hours.",
     potentialFine: 1100,
     status: "open",
   },
@@ -475,7 +476,7 @@ const issuesData: ComplianceIssue[] = [
     category: "Time & Pay",
     ruleName: "Minimum Wage for San Francisco 2024",
     riskLevel: "high",
-    location: "Great Boardway",
+    location: "San Francisco - Mission District",
     worker: "Edgar Cohen",
     summary: "Rate $17.31 < Min $18.67",
     detail: "For pay period starting 2025-02-10, employee Edgar Cohen (San Francisco, CA) had a regular rate of pay of $17.31 per hour (calculated as $1384.62 total straight-time earnings ÷ 80.00 worked hours), which is below the required minimum wage of $18.67 per hour.",
@@ -488,7 +489,7 @@ const issuesData: ComplianceIssue[] = [
     category: "Ready to Work",
     ruleName: "I-9 Form Completion Violation",
     riskLevel: "high",
-    location: "Great Main",
+    location: "San Francisco - Market St",
     worker: "Debbie Cardenas",
     summary: "I-9 26 days past deadline",
     detail: "Employee Debbie Cardenas was hired on 2022-08-02 with an estimated I-9 completion deadline of 2022-08-05. The E-Verify case was created on 2022-08-31, which was 26 days after the deadline. Status: CLOSED. Risk Level: HIGH. Submitted late.",
@@ -501,10 +502,140 @@ const issuesData: ComplianceIssue[] = [
     category: "Ready to Work",
     ruleName: "I-9 Form Completion Violation",
     riskLevel: "high",
-    location: "Great Main",
+    location: "San Francisco - Market St",
     worker: "Harry Salazar",
     summary: "I-9 44 days past deadline",
     detail: "Employee Harry Salazar was hired on 2022-08-18 with an estimated I-9 completion deadline of 2022-08-23. The E-Verify case was created on 2022-10-06, which was 44 days after the deadline. Status: CLOSED. Risk Level: HIGH. Submitted late.",
+    potentialFine: 500,
+    status: "open",
+  },
+  {
+    id: "8",
+    reportDate: "Jan 20, 2025",
+    category: "Ready to Work",
+    ruleName: "I-9 Form Completion Violation",
+    riskLevel: "high",
+    location: "San Francisco - Mission District",
+    worker: "Maria Santos",
+    summary: "I-9 5 days past deadline",
+    detail: "Employee Maria Santos was hired on 2022-07-15 with an estimated I-9 completion deadline of 2022-07-18. The E-Verify case was created on 2022-07-23, which was 5 days after the deadline. Status: CLOSED. Risk Level: HIGH. Submitted late.",
+    potentialFine: 500,
+    status: "open",
+  },
+  {
+    id: "9",
+    reportDate: "Jan 15, 2025",
+    category: "Ready to Work",
+    ruleName: "I-9 Form Completion Violation",
+    riskLevel: "medium",
+    location: "Oakland - Downtown",
+    worker: "James Wilson",
+    summary: "I-9 2 days past deadline",
+    detail: "Employee James Wilson was hired on 2022-10-01 with an estimated I-9 completion deadline of 2022-10-04. The E-Verify case was created on 2022-10-06, which was 2 days after the deadline. Status: CLOSED. Risk Level: MEDIUM. Submitted late.",
+    potentialFine: 300,
+    status: "open",
+  },
+  {
+    id: "10",
+    reportDate: "Jan 10, 2025",
+    category: "Ready to Work",
+    ruleName: "Food Handler Certification Expired",
+    riskLevel: "medium",
+    location: "San Francisco - Market St",
+    worker: "Lisa Chen",
+    summary: "Certification expired 15 days ago",
+    detail: "Employee Lisa Chen's food handler certification expired on 2024-12-26. California Health and Safety Code requires all food handlers to maintain valid certification.",
+    potentialFine: 250,
+    status: "open",
+  },
+  {
+    id: "11",
+    reportDate: "Jan 8, 2025",
+    category: "Time & Pay",
+    ruleName: "Meal Break Violation",
+    riskLevel: "medium",
+    location: "San Francisco - Mission District",
+    worker: "Robert Kim",
+    summary: "Missed meal break on 6hr shift",
+    detail: "Employee Robert Kim worked a 6.5 hour shift on 2025-01-08 without taking the required 30-minute unpaid meal break. California Labor Code 512 requires a meal break for shifts over 5 hours.",
+    potentialFine: 150,
+    status: "open",
+  },
+  {
+    id: "12",
+    reportDate: "Jan 5, 2025",
+    category: "Ready to Work",
+    ruleName: "I-9 Form Completion Violation",
+    riskLevel: "high",
+    location: "San Francisco - Mission District",
+    worker: "Ana Rodriguez",
+    summary: "I-9 12 days past deadline",
+    detail: "Employee Ana Rodriguez was hired on 2022-06-20 with an estimated I-9 completion deadline of 2022-06-23. The E-Verify case was created on 2022-07-05, which was 12 days after the deadline. Status: CLOSED. Risk Level: HIGH. Submitted late.",
+    potentialFine: 500,
+    status: "open",
+  },
+  {
+    id: "13",
+    reportDate: "Jan 3, 2025",
+    category: "Time & Pay",
+    ruleName: "Overtime Premium Violation",
+    riskLevel: "high",
+    location: "San Francisco - Mission District",
+    worker: "Michael Brown",
+    summary: "OT 12.5h, Paid $0.00 < Required $468.75",
+    detail: "For pay period starting 2025-01-03, employee Michael Brown worked 52.5 hours over 7 days, exceeding the 40-hour weekly threshold by 12.5 hours. They were paid an overtime premium of $0.00, but the required premium was $468.75.",
+    potentialFine: 1200,
+    status: "open",
+  },
+  {
+    id: "14",
+    reportDate: "Dec 28, 2024",
+    category: "Ready to Work",
+    ruleName: "I-9 Form Completion Violation",
+    riskLevel: "medium",
+    location: "Oakland - Downtown",
+    worker: "Jennifer Lee",
+    summary: "I-9 3 days past deadline",
+    detail: "Employee Jennifer Lee was hired on 2022-11-10 with an estimated I-9 completion deadline of 2022-11-13. The E-Verify case was created on 2022-11-16, which was 3 days after the deadline. Status: CLOSED. Risk Level: MEDIUM. Submitted late.",
+    potentialFine: 300,
+    status: "open",
+  },
+  {
+    id: "15",
+    reportDate: "Dec 20, 2024",
+    category: "Ready to Work",
+    ruleName: "Food Handler Certification Missing",
+    riskLevel: "high",
+    location: "San Francisco - Market St",
+    worker: "David Martinez",
+    summary: "No food handler card on file",
+    detail: "Employee David Martinez has been employed for 45 days without obtaining the required food handler certification. California Health and Safety Code 113948 requires certification within 30 days of hire.",
+    potentialFine: 500,
+    status: "open",
+  },
+  {
+    id: "16",
+    reportDate: "Dec 15, 2024",
+    category: "Ready to Work",
+    ruleName: "I-9 Form Completion Violation",
+    riskLevel: "medium",
+    location: "San Francisco - Mission District",
+    worker: "Sarah Johnson",
+    summary: "I-9 4 days past deadline",
+    detail: "Employee Sarah Johnson was hired on 2022-12-01 with an estimated I-9 completion deadline of 2022-12-04. The E-Verify case was created on 2022-12-08, which was 4 days after the deadline. Status: CLOSED. Risk Level: MEDIUM. Submitted late.",
+    potentialFine: 300,
+    status: "open",
+  },
+  {
+    id: "17",
+    reportDate: "Dec 10, 2024",
+    category: "Ready to Work",
+    ruleName: "Minor Work Permit Missing",
+    riskLevel: "high",
+    location: "Palo Alto - University Ave",
+    worker: "Tyler Smith",
+    summary: "No work permit for minor employee",
+    detail: "Employee Tyler Smith (age 17) has been working without the required work permit from their school. California Labor Code 1299 requires work permits for all minors under 18.",
     potentialFine: 500,
     status: "open",
   },
@@ -659,6 +790,7 @@ interface HeatmapCardProps {
   columns: string[];
   data: Record<string, Record<string, number>>;
   finesData?: Record<string, Record<string, number>>;
+  onCellClick?: (location: string, category: string) => void;
 }
 
 interface HeatmapTooltipData {
@@ -670,7 +802,7 @@ interface HeatmapTooltipData {
   y: number;
 }
 
-const HeatmapCard = ({ title, rows, columns, data, finesData }: HeatmapCardProps) => {
+const HeatmapCard = ({ title, rows, columns, data, finesData, onCellClick }: HeatmapCardProps) => {
   const [tooltip, setTooltip] = useState<HeatmapTooltipData | null>(null);
   
   const maxValue = Math.max(
@@ -735,6 +867,7 @@ const HeatmapCard = ({ title, rows, columns, data, finesData }: HeatmapCardProps
                         className={`h-10 rounded ${getHeatmapColor(value, maxValue)} transition-colors cursor-pointer hover:ring-2 hover:ring-gray-300`}
                         onMouseEnter={(e) => handleMouseEnter(e, row, col, value)}
                         onMouseLeave={() => setTooltip(null)}
+                        onClick={() => value > 0 && onCellClick?.(row, col)}
                       />
                     </td>
                   );
@@ -811,7 +944,6 @@ const HeatmapCard = ({ title, rows, columns, data, finesData }: HeatmapCardProps
 interface IssueCardProps {
   issue: ComplianceIssue;
   onResolve: (id: string, comment: string) => void;
-  onMarkInReview: (id: string) => void;
 }
 
 const BellIcon = () => (
@@ -826,7 +958,7 @@ const XIcon = () => (
   </svg>
 );
 
-const IssueCard = ({ issue, onResolve, onMarkInReview }: IssueCardProps) => {
+const IssueCard = ({ issue, onResolve }: IssueCardProps) => {
   const [expanded, setExpanded] = useState(false);
   const [showResolvePopup, setShowResolvePopup] = useState(false);
   const [showReminderPopup, setShowReminderPopup] = useState(false);
@@ -979,13 +1111,6 @@ const IssueCard = ({ issue, onResolve, onMarkInReview }: IssueCardProps) => {
                   </>
                 )}
               </div>
-              <button
-                onClick={() => onMarkInReview(issue.id)}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <ClockIcon />
-                Mark In Review
-              </button>
               <div className="relative">
                 <button
                   onClick={() => setShowResolvePopup(!showResolvePopup)}
@@ -1567,6 +1692,7 @@ export default function Compliance() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterLocation, setFilterLocation] = useState<string>("");
   const [filterCategory, setFilterCategory] = useState<string>("");
+  const [filterStatus, setFilterStatus] = useState<string>("open"); // Default to open issues
   const [sortBy, setSortBy] = useState<"date" | "fine" | "risk">("date");
 
   // Filter state for rules
@@ -1591,11 +1717,6 @@ export default function Compliance() {
     ));
   };
 
-  const handleMarkInReview = (id: string) => {
-    setIssues(prev => prev.map(issue => 
-      issue.id === id ? { ...issue, status: "in_review" as const } : issue
-    ));
-  };
 
   // Get unique locations and categories for filters
   const uniqueLocations = Array.from(new Set(issues.map(i => i.location))).sort();
@@ -1611,7 +1732,8 @@ export default function Compliance() {
         issue.detail.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesLocation = filterLocation === "" || issue.location === filterLocation;
       const matchesCategory = filterCategory === "" || issue.category === filterCategory;
-      return matchesSearch && matchesLocation && matchesCategory;
+      const matchesStatus = filterStatus === "" || issue.status === filterStatus;
+      return matchesSearch && matchesLocation && matchesCategory && matchesStatus;
     })
     .sort((a, b) => {
       switch (sortBy) {
@@ -1795,6 +1917,12 @@ export default function Compliance() {
               columns={categoryNames}
               data={locationHeatmapData}
               finesData={locationFinesData}
+              onCellClick={(location, category) => {
+                setFilterLocation(location);
+                setFilterCategory(category);
+                setFilterStatus("open");
+                setActiveTab("issues");
+              }}
             />
           </div>
 
@@ -1816,12 +1944,11 @@ export default function Compliance() {
             </div>
 
             <div className="space-y-4">
-              {issues.slice(0, 4).map((issue) => (
+              {issues.filter(i => i.status !== "resolved").slice(0, 4).map((issue) => (
                 <IssueCard
                   key={issue.id}
                   issue={issue}
                   onResolve={handleResolve}
-                  onMarkInReview={handleMarkInReview}
                 />
               ))}
             </div>
@@ -1887,6 +2014,25 @@ export default function Compliance() {
               </div>
             </div>
 
+            {/* Status Filter */}
+            <div className="relative">
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="appearance-none pl-4 pr-10 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent cursor-pointer transition-all"
+              >
+                <option value="">All Statuses</option>
+                <option value="open">Open</option>
+                <option value="in_review">In Review</option>
+                <option value="resolved">Resolved</option>
+              </select>
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-400">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
+
             {/* Sort By */}
             <div className="relative">
               <select
@@ -1911,12 +2057,13 @@ export default function Compliance() {
             <p className="text-sm text-gray-500">
               Showing {filteredIssues.length} of {issues.length} issues · {openIssues.length} open · {inReviewIssues.length} in review · {resolvedIssues.length} resolved
             </p>
-            {(searchQuery || filterLocation || filterCategory) && (
+            {(searchQuery || filterLocation || filterCategory || filterStatus) && (
               <button
                 onClick={() => {
                   setSearchQuery("");
                   setFilterLocation("");
                   setFilterCategory("");
+                  setFilterStatus("");
                 }}
                 className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
               >
@@ -1932,7 +2079,6 @@ export default function Compliance() {
                 key={issue.id}
                 issue={issue}
                 onResolve={handleResolve}
-                onMarkInReview={handleMarkInReview}
               />
             ))}
 

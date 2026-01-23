@@ -110,7 +110,7 @@ export default function Home() {
   const userName = "Stoyan";
 
   return (
-    <div className="min-h-full bg-gradient-to-br from-amber-50/50 via-white to-teal-50/30">
+    <div className="min-h-full">
       {/* Header */}
       <div className="px-8 lg:px-12 pt-8">
         <div className="flex items-start justify-between">
