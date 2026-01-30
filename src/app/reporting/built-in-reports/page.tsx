@@ -1,6 +1,14 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import Link from "next/link";
+
+// Helper to create URL-friendly slugs
+function createReportSlug(reportTitle: string, tabName: string): string {
+  const reportSlug = reportTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  const tabSlug = tabName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  return `${reportSlug}--${tabSlug}`;
+}
 
 interface Report {
   title: string;
@@ -395,12 +403,13 @@ export default function BuiltInReports() {
                         <div className="mt-3 flex items-center gap-1 text-sm pl-6.5 flex-wrap">
                           {report.tabNames.slice(0, 5).map((tab, index) => (
                             <span key={tab} className="flex items-center">
-                              <a
-                                href="#"
+                              <Link
+                                href={`/reporting/built-in-reports/${createReportSlug(report.title, tab)}`}
                                 className="text-gray-600 hover:text-gray-900 hover:underline transition-colors"
+                                onClick={(e) => e.stopPropagation()}
                               >
                                 {tab}
-                              </a>
+                              </Link>
                               {index < Math.min(report.tabNames.length, 5) - 1 && (
                                 <span className="text-gray-300 mx-2">·</span>
                               )}

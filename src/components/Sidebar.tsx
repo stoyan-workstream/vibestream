@@ -198,14 +198,14 @@ export default function Sidebar() {
           isActive={pathname === '/scheduling'} 
           isCollapsed={isCollapsed}
         />
-        <NavItem 
+        {/* <NavItem 
           href="/compliance" 
           icon={<ComplianceIcon />} 
           label="Compliance" 
           isActive={pathname === '/compliance'} 
           isCollapsed={isCollapsed}
           badge={17}
-        />
+        /> */}
         
         {/* Reporting with submenu */}
         <div>
@@ -227,6 +227,12 @@ export default function Sidebar() {
           {reportingOpen && !isCollapsed && (
             <div className="mt-1 space-y-1">
               <SubNavItem 
+                href="/reporting/dashboards" 
+                label="Dashboards" 
+                isActive={pathname === '/reporting/dashboards'}
+                isCollapsed={isCollapsed}
+              />
+              <SubNavItem 
                 href="/reporting/ai-reporting" 
                 label="AI Reporting" 
                 isActive={pathname === '/reporting/ai-reporting'}
@@ -235,7 +241,7 @@ export default function Sidebar() {
               <SubNavItem 
                 href="/reporting/built-in-reports" 
                 label="Built-in Reports" 
-                isActive={pathname === '/reporting/built-in-reports'}
+                isActive={pathname.startsWith('/reporting/built-in-reports')}
                 isCollapsed={isCollapsed}
               />
               <SubNavItem 
