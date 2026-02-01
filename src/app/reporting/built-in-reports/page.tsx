@@ -292,12 +292,16 @@ function CategoryCard({
 
   return (
     <div className="w-full">
-      {/* Horizontal Card */}
-      <div className="relative bg-gradient-to-r from-white via-gray-50 to-white rounded-2xl border border-gray-200 shadow-md hover:shadow-lg transition-all duration-300">
+      {/* Unified Card Container */}
+      <div className={`relative bg-gradient-to-r from-white via-gray-50 to-white border border-gray-200 shadow-md hover:shadow-lg transition-all duration-300 ${
+        isOpen ? "rounded-t-2xl" : "rounded-2xl"
+      }`}>
         {/* Shine effect */}
-        <div className="absolute inset-0 bg-gradient-to-r from-white/50 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
+        <div className={`absolute inset-0 bg-gradient-to-r from-white/50 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 ${
+          isOpen ? "rounded-t-2xl" : "rounded-2xl"
+        }`} />
         
-        {/* Card Content */}
+        {/* Card Header */}
         <div className="relative p-6">
           <div className="flex items-center justify-between">
             {/* Left: Category Info */}
@@ -345,15 +349,19 @@ function CategoryCard({
             </button>
           </div>
         </div>
-
-        {/* Bottom accent line */}
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-workstream-blue to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+        
+        {/* Subtle divider when open */}
+        {isOpen && (
+          <div className="px-6">
+            <div className="border-t border-gray-100" />
+          </div>
+        )}
       </div>
 
-      {/* Dropdown Content - Flows naturally below */}
+      {/* Dropdown Content - Connected to header */}
       {isOpen && (
-        <div className="mt-3 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden animate-slideDown">
-          <div className="p-4 space-y-3">
+        <div className="bg-white border-l border-r border-b border-gray-200 rounded-b-2xl shadow-md overflow-hidden animate-slideDown">
+          <div className="px-6 pb-6 pt-4 space-y-3">
             {reports.map((report) => {
               const isReportStarred = starredReports.has(report.title);
               return (
