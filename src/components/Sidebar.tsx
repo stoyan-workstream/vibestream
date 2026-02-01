@@ -162,7 +162,10 @@ export default function Sidebar() {
     >
       {/* Header */}
       <div className="flex items-center justify-between p-4">
-        <div className="w-10 h-10 bg-indigo-500 rounded-lg flex items-center justify-center">
+        <div 
+          className="w-10 h-10 rounded-lg flex items-center justify-center shadow-md"
+          style={{ backgroundColor: 'var(--workstream-blue)' }}
+        >
           <span className="text-white text-xl font-bold">≈</span>
         </div>
         {!isCollapsed && (

@@ -247,9 +247,238 @@ const DocumentIcon = () => (
   </svg>
 );
 
+const ChevronDownIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+  </svg>
+);
+
+const StarIcon = ({ filled }: { filled: boolean }) => (
+  <svg 
+    className="w-5 h-5" 
+    fill={filled ? "currentColor" : "none"} 
+    stroke="currentColor" 
+    viewBox="0 0 24 24"
+  >
+    <path 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      strokeWidth={1.5} 
+      d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" 
+    />
+  </svg>
+);
+
+// Category Card Component with Dropdown
+function CategoryCard({ 
+  category, 
+  reports,
+  isStarred,
+  onToggleStar,
+  starredReports,
+  onToggleReportStar,
+  isOpen,
+  onToggle
+}: { 
+  category: string; 
+  reports: Report[];
+  isStarred: boolean;
+  onToggleStar: () => void;
+  starredReports: Set<string>;
+  onToggleReportStar: (reportTitle: string) => void;
+  isOpen: boolean;
+  onToggle: () => void;
+}) {
+
+  return (
+    <div className="w-full">
+      {/* Horizontal Card */}
+      <div className="relative bg-gradient-to-r from-white via-gray-50 to-white rounded-2xl border border-gray-200 shadow-md hover:shadow-lg transition-all duration-300">
+        {/* Shine effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-white/50 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
+        
+        {/* Card Content */}
+        <div className="relative p-6">
+          <div className="flex items-center justify-between">
+            {/* Left: Category Info */}
+            <div className="flex items-center gap-4 flex-1">
+              <div className="w-14 h-14 bg-gradient-to-br from-workstream-blue to-workstream-blue-dark rounded-xl flex items-center justify-center text-white shadow-md flex-shrink-0">
+                {categoryIcons[category]}
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-xl font-semibold text-gray-900">{category}</h3>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onToggleStar();
+                    }}
+                    className={`p-1 rounded-full transition-colors ${
+                      isStarred 
+                        ? "text-yellow-500 hover:text-yellow-600" 
+                        : "text-gray-300 hover:text-yellow-500"
+                    }`}
+                    title={isStarred ? "Remove from favorites" : "Add to favorites"}
+                  >
+                    <StarIcon filled={isStarred} />
+                  </button>
+                </div>
+                <p className="text-sm text-gray-500 mt-1">{reports.length} reports available</p>
+              </div>
+            </div>
+
+            {/* Right: Toggle Button */}
+            <button
+              onClick={onToggle}
+              className="flex items-center gap-3 px-5 py-3 bg-white border border-gray-200 rounded-xl hover:border-workstream-blue hover:shadow-sm transition-all duration-200 ml-4"
+            >
+              <span className="text-sm font-medium text-gray-700">
+                {isOpen ? "Hide" : "View"} reports
+              </span>
+              <div
+                className={`text-gray-400 transition-transform duration-200 ${
+                  isOpen ? "rotate-180" : ""
+                }`}
+              >
+                <ChevronDownIcon />
+              </div>
+            </button>
+          </div>
+        </div>
+
+        {/* Bottom accent line */}
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-workstream-blue to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+      </div>
+
+      {/* Dropdown Content - Flows naturally below */}
+      {isOpen && (
+        <div className="mt-3 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden animate-slideDown">
+          <div className="p-4 space-y-3">
+            {reports.map((report) => {
+              const isReportStarred = starredReports.has(report.title);
+              return (
+                <div
+                  key={report.title}
+                  className="group/item p-4 hover:bg-gray-50 rounded-lg transition-colors border border-gray-100"
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="text-gray-400 mt-1 flex-shrink-0">
+                      <DocumentIcon />
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h4 className="text-sm font-medium text-gray-900">
+                          {report.title}
+                        </h4>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onToggleReportStar(report.title);
+                          }}
+                          className={`p-0.5 rounded transition-colors ${
+                            isReportStarred 
+                              ? "text-yellow-500 hover:text-yellow-600" 
+                              : "text-gray-300 hover:text-yellow-500"
+                          }`}
+                          title={isReportStarred ? "Remove from favorites" : "Add to favorites"}
+                        >
+                          <StarIcon filled={isReportStarred} />
+                        </button>
+                      </div>
+                      <p className="text-xs text-gray-500 mb-3 leading-relaxed">
+                        {report.description}
+                      </p>
+                      <div className="space-y-2">
+                        <p className="text-xs font-medium text-gray-700">Available Views:</p>
+                        <div className="flex flex-wrap gap-2">
+                          {report.tabNames.map((tab) => (
+                            <Link
+                              key={tab}
+                              href={`/reporting/built-in-reports/${createReportSlug(report.title, tab)}`}
+                              className="group inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-workstream-blue bg-workstream-blue/10 hover:bg-workstream-blue hover:text-white rounded-lg transition-all border border-workstream-blue/20 hover:border-workstream-blue hover:shadow-md"
+                            >
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                              </svg>
+                              <span>{tab}</span>
+                              <svg className="w-3 h-3 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function BuiltInReports() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [starredCategories, setStarredCategories] = useState<Set<string>>(new Set());
+  const [starredReports, setStarredReports] = useState<Set<string>>(new Set());
+  const [openCategories, setOpenCategories] = useState<Set<string>>(new Set());
+
+  // Load starred items from localStorage
+  useEffect(() => {
+    const savedCategories = localStorage.getItem("starredCategories");
+    const savedReports = localStorage.getItem("starredReports");
+    if (savedCategories) {
+      setStarredCategories(new Set(JSON.parse(savedCategories)));
+    }
+    if (savedReports) {
+      setStarredReports(new Set(JSON.parse(savedReports)));
+    }
+  }, []);
+
+  // Save starred categories to localStorage
+  const toggleCategoryStar = (category: string) => {
+    setStarredCategories((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(category)) {
+        newSet.delete(category);
+      } else {
+        newSet.add(category);
+      }
+      localStorage.setItem("starredCategories", JSON.stringify(Array.from(newSet)));
+      return newSet;
+    });
+  };
+
+  // Save starred reports to localStorage
+  const toggleReportStar = (reportTitle: string) => {
+    setStarredReports((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(reportTitle)) {
+        newSet.delete(reportTitle);
+      } else {
+        newSet.add(reportTitle);
+      }
+      localStorage.setItem("starredReports", JSON.stringify(Array.from(newSet)));
+      return newSet;
+    });
+  };
+
+  // Toggle individual category
+  const toggleCategory = (category: string) => {
+    setOpenCategories((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(category)) {
+        newSet.delete(category);
+      } else {
+        newSet.add(category);
+      }
+      return newSet;
+    });
+  };
 
   // Keyboard shortcut for search
   useEffect(() => {
@@ -288,6 +517,28 @@ export default function BuiltInReports() {
     return grouped;
   }, [filteredReports]);
 
+  // Sort categories: starred first, then alphabetically
+  const sortedCategories = useMemo(() => {
+    return Object.entries(groupedReports).sort(([catA], [catB]) => {
+      const aStarred = starredCategories.has(catA);
+      const bStarred = starredCategories.has(catB);
+      if (aStarred && !bStarred) return -1;
+      if (!aStarred && bStarred) return 1;
+      return catA.localeCompare(catB);
+    });
+  }, [groupedReports, starredCategories]);
+
+  // Expand all categories
+  const expandAll = () => {
+    const allCategories = Object.keys(groupedReports);
+    setOpenCategories(new Set(allCategories));
+  };
+
+  // Collapse all categories
+  const collapseAll = () => {
+    setOpenCategories(new Set());
+  };
+
   return (
     <div className="p-8 lg:p-12 min-h-full max-w-6xl">
       {/* Page Header */}
@@ -306,6 +557,10 @@ export default function BuiltInReports() {
           <span className="text-gray-400">Categories</span>
           <span className="ml-2 font-medium text-gray-900">{categories.length}</span>
         </div>
+        <div>
+          <span className="text-gray-400">Starred</span>
+          <span className="ml-2 font-medium text-yellow-600">{starredCategories.size + starredReports.size}</span>
+        </div>
         {searchQuery && (
           <div className="animate-fade-in">
             <span className="text-gray-400">Showing</span>
@@ -315,126 +570,149 @@ export default function BuiltInReports() {
       </div>
 
       {/* Search and Filter Bar */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-10">
-        {/* Search Input */}
-        <div className="relative flex-1">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
-            <SearchIcon />
+      <div className="flex flex-col gap-3 mb-10">
+        <div className="flex flex-col sm:flex-row gap-3">
+          {/* Search Input */}
+          <div className="relative flex-1">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+              <SearchIcon />
+            </div>
+            <input
+              id="report-search"
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search reports..."
+              className="w-full pl-11 pr-20 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-workstream-blue focus:border-transparent transition-all"
+            />
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+              <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs text-gray-400 bg-gray-100 rounded border border-gray-200">
+                <span className="text-xs">⌘</span>K
+              </kbd>
+            </div>
           </div>
-          <input
-            id="report-search"
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search reports..."
-            className="w-full pl-11 pr-20 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
-          />
-          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-            <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs text-gray-400 bg-gray-100 rounded border border-gray-200">
-              <span className="text-xs">⌘</span>K
-            </kbd>
+
+          {/* Category Filter */}
+          <div className="relative">
+            <select
+              value={selectedCategory || ""}
+              onChange={(e) => setSelectedCategory(e.target.value || null)}
+              className="appearance-none pl-4 pr-10 py-3 bg-white border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-workstream-blue focus:border-transparent cursor-pointer transition-all"
+            >
+              <option value="">All Categories</option>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-400">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
           </div>
         </div>
 
-        {/* Category Filter */}
-        <div className="relative">
-          <select
-            value={selectedCategory || ""}
-            onChange={(e) => setSelectedCategory(e.target.value || null)}
-            className="appearance-none pl-4 pr-10 py-3 bg-white border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent cursor-pointer transition-all"
+        {/* Expand/Collapse All Buttons */}
+        <div className="flex gap-2">
+          <button
+            onClick={expandAll}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-workstream-blue bg-workstream-blue/10 hover:bg-workstream-blue/20 rounded-lg transition-colors"
           >
-            <option value="">All Categories</option>
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-400">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
             </svg>
-          </div>
+            Expand All
+          </button>
+          <button
+            onClick={collapseAll}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+            Collapse All
+          </button>
         </div>
       </div>
 
-      {/* Reports List */}
-      <div className="space-y-12">
-        {Object.entries(groupedReports)
-          .sort(([a], [b]) => a.localeCompare(b))
-          .map(([category, categoryReports]) => (
-            <section key={category}>
-              {/* Category Header */}
-              <div className="flex items-center gap-3 mb-5">
-                <span className="text-gray-400">
-                  {categoryIcons[category]}
-                </span>
-                <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">
-                  {category}
-                </h2>
-                <span className="text-sm text-gray-400">{categoryReports.length}</span>
-              </div>
-
-              {/* Reports */}
-              <div className="space-y-3">
-                {categoryReports.map((report) => (
-                  <article
-                    key={report.title}
-                    className="group bg-white rounded-lg border border-gray-200 p-5 hover:border-gray-300 hover:shadow-sm transition-all duration-200 cursor-pointer"
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        {/* Report Title */}
-                        <div className="flex items-center gap-2.5">
-                          <span className="text-gray-400 group-hover:text-gray-600 transition-colors">
-                            <DocumentIcon />
-                          </span>
-                          <h3 className="font-medium text-gray-900 group-hover:text-black transition-colors">
-                            {report.title}
-                          </h3>
-                        </div>
-
-                        {/* Description */}
-                        <p className="mt-2 text-sm text-gray-500 leading-relaxed line-clamp-2 pl-6.5">
-                          {report.description}
-                        </p>
-
-                        {/* Report Variants */}
-                        <div className="mt-3 flex items-center gap-1 text-sm pl-6.5 flex-wrap">
-                          {report.tabNames.slice(0, 5).map((tab, index) => (
-                            <span key={tab} className="flex items-center">
-                              <Link
-                                href={`/reporting/built-in-reports/${createReportSlug(report.title, tab)}`}
-                                className="text-gray-600 hover:text-gray-900 hover:underline transition-colors"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                {tab}
-                              </Link>
-                              {index < Math.min(report.tabNames.length, 5) - 1 && (
-                                <span className="text-gray-300 mx-2">·</span>
-                              )}
-                            </span>
-                          ))}
-                          {report.tabNames.length > 5 && (
-                            <span className="text-gray-400 ml-1">
-                              +{report.tabNames.length - 5} more
-                            </span>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Arrow */}
-                      <div className="flex-shrink-0 text-gray-300 group-hover:text-gray-500 group-hover:translate-x-0.5 transition-all">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </div>
+      {/* Starred Reports Quick Access */}
+      {starredReports.size > 0 && !searchQuery && !selectedCategory && (
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-yellow-500">
+              <StarIcon filled={true} />
+            </span>
+            <h2 className="text-lg font-semibold text-gray-900">Favorite Reports</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {Array.from(starredReports).map((reportTitle) => {
+              const report = reports.find((r) => r.title === reportTitle);
+              if (!report) return null;
+              return (
+                <div
+                  key={reportTitle}
+                  className="p-4 bg-gradient-to-br from-yellow-50 to-white border border-yellow-200 rounded-xl hover:shadow-md transition-all"
+                >
+                  <div className="flex items-start gap-2 mb-2">
+                    <span className="text-gray-400 mt-0.5 flex-shrink-0">
+                      <DocumentIcon />
+                    </span>
+                    <h4 className="text-sm font-medium text-gray-900 flex-1">
+                      {report.title}
+                    </h4>
+                    <button
+                      onClick={() => toggleReportStar(reportTitle)}
+                      className="text-yellow-500 hover:text-yellow-600 transition-colors"
+                    >
+                      <StarIcon filled={true} />
+                    </button>
+                  </div>
+                  <div className="space-y-1.5 mt-3">
+                    <p className="text-xs font-medium text-gray-600">Quick Access:</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {report.tabNames.slice(0, 3).map((tab) => (
+                        <Link
+                          key={tab}
+                          href={`/reporting/built-in-reports/${createReportSlug(report.title, tab)}`}
+                          className="group inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-workstream-blue bg-white hover:bg-workstream-blue hover:text-white rounded-md transition-all border border-workstream-blue/30 hover:border-workstream-blue hover:shadow-sm"
+                        >
+                          <span>{tab}</span>
+                          <svg className="w-2.5 h-2.5 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </Link>
+                      ))}
+                      {report.tabNames.length > 3 && (
+                        <span className="inline-flex items-center px-2 py-1 text-xs text-gray-500">
+                          +{report.tabNames.length - 3} more
+                        </span>
+                      )}
                     </div>
-                  </article>
-                ))}
-              </div>
-            </section>
-          ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Category Cards - Vertical Stack */}
+      <div className="space-y-4">
+        {sortedCategories.map(([category, categoryReports]) => (
+          <CategoryCard
+            key={category}
+            category={category}
+            reports={categoryReports}
+            isStarred={starredCategories.has(category)}
+            onToggleStar={() => toggleCategoryStar(category)}
+            starredReports={starredReports}
+            onToggleReportStar={toggleReportStar}
+            isOpen={openCategories.has(category)}
+            onToggle={() => toggleCategory(category)}
+          />
+        ))}
       </div>
 
       {/* Empty State */}
