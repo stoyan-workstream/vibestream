@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
-import { Star, ChevronDown } from "lucide-react";
+import { Star, ChevronDown, Play } from "lucide-react";
 
 // Helper to create URL-friendly slugs
 function createReportSlug(reportTitle: string, tabName: string): string {
@@ -204,7 +204,7 @@ const reports: Report[] = [
   },
 ];
 
-const allCategories = Array.from(new Set(reports.map((r) => r.category))).sort();
+const categories = Array.from(new Set(reports.map((r) => r.category))).sort();
 
 // Report Row Component
 function ReportRow({ 
@@ -216,38 +216,66 @@ function ReportRow({
   isStarred: boolean; 
   onToggleStar: () => void;
 }) {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const defaultView = report.tabNames[0];
+
   return (
-    <div className="group px-6 py-5 bg-white hover:bg-gray-50 border-b border-gray-100 transition-colors">
-      <div className="flex items-start gap-4">
-        {/* Report Info */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <h3 className="text-sm font-semibold text-gray-900">{report.title}</h3>
-            {/* Star Toggle */}
-            <button
-              onClick={onToggleStar}
-              className={`flex-shrink-0 transition-colors ${
-                isStarred ? "text-yellow-500" : "text-gray-300 hover:text-yellow-500"
-              }`}
-            >
-              <Star className={`w-4 h-4 ${isStarred ? "fill-current" : ""}`} />
-            </button>
-          </div>
-          <p className="text-xs text-gray-500 mb-3">{report.description}</p>
+    <div className="group flex items-center gap-4 px-4 py-3 bg-white hover:bg-gray-50 border-b border-gray-100 transition-colors">
+      {/* Star Toggle */}
+      <button
+        onClick={onToggleStar}
+        className={`flex-shrink-0 transition-colors ${
+          isStarred ? "text-yellow-500" : "text-gray-300 hover:text-yellow-500"
+        }`}
+      >
+        <Star className={`w-4 h-4 ${isStarred ? "fill-current" : ""}`} />
+      </button>
+
+      {/* Report Info */}
+      <div className="flex-1 min-w-0">
+        <h3 className="text-sm font-semibold text-gray-900">{report.title}</h3>
+        <p className="text-xs text-gray-500 line-clamp-1 mt-0.5">{report.description}</p>
+      </div>
+
+      {/* Run Report Button */}
+      <div className="flex-shrink-0 relative">
+        <div className="flex items-center gap-1">
+          <Link
+            href={`/reporting/built-in-reports/${createReportSlug(report.title, defaultView)}`}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-workstream-blue hover:bg-workstream-blue-dark rounded-lg transition-colors"
+          >
+            <Play className="w-3.5 h-3.5" />
+            Run Report
+          </Link>
           
-          {/* Action Badges - New row below description */}
-          <div className="flex items-center gap-2 flex-wrap">
-            {report.tabNames.map((tab) => (
-              <Link
-                key={tab}
-                href={`/reporting/built-in-reports/${createReportSlug(report.title, tab)}`}
-                className="px-3 py-1 text-xs font-medium text-gray-600 bg-gray-50 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 border border-gray-200 rounded-full transition-all whitespace-nowrap"
-              >
-                {tab}
-              </Link>
-            ))}
-          </div>
+          {report.tabNames.length > 1 && (
+            <button
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
+            </button>
+          )}
         </div>
+
+        {/* Dropdown Menu */}
+        {dropdownOpen && report.tabNames.length > 1 && (
+          <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-xl z-50">
+            <div className="p-2">
+              <div className="text-xs font-medium text-gray-500 px-3 py-2">Select View</div>
+              {report.tabNames.map((tab) => (
+                <Link
+                  key={tab}
+                  href={`/reporting/built-in-reports/${createReportSlug(report.title, tab)}`}
+                  className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                  onClick={() => setDropdownOpen(false)}
+                >
+                  {tab}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -259,7 +287,6 @@ export default function BuiltInReports() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [starredReports, setStarredReports] = useState<Set<string>>(new Set());
-  const [starredCategories, setStarredCategories] = useState<Set<string>>(new Set());
   const [sortOption, setSortOption] = useState<SortOption>("starred-first");
 
   // Load starred items from localStorage
@@ -267,10 +294,6 @@ export default function BuiltInReports() {
     const savedReports = localStorage.getItem("starredReports");
     if (savedReports) {
       setStarredReports(new Set(JSON.parse(savedReports)));
-    }
-    const savedCategories = localStorage.getItem("starredCategories");
-    if (savedCategories) {
-      setStarredCategories(new Set(JSON.parse(savedCategories)));
     }
   }, []);
 
@@ -284,20 +307,6 @@ export default function BuiltInReports() {
         newSet.add(reportTitle);
       }
       localStorage.setItem("starredReports", JSON.stringify(Array.from(newSet)));
-      return newSet;
-    });
-  };
-
-  // Save starred categories to localStorage
-  const toggleCategoryStar = (category: string) => {
-    setStarredCategories((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(category)) {
-        newSet.delete(category);
-      } else {
-        newSet.add(category);
-      }
-      localStorage.setItem("starredCategories", JSON.stringify(Array.from(newSet)));
       return newSet;
     });
   };
@@ -354,18 +363,6 @@ export default function BuiltInReports() {
     return counts;
   }, []);
 
-  // Sort categories with starred first
-  const sortedCategories = useMemo(() => {
-    return [...allCategories].sort((a, b) => {
-      const aStarred = starredCategories.has(a);
-      const bStarred = starredCategories.has(b);
-      
-      if (aStarred && !bStarred) return -1;
-      if (!aStarred && bStarred) return 1;
-      return a.localeCompare(b);
-    });
-  }, [starredCategories]);
-
   return (
     <div className="h-full flex">
       {/* Sticky Sidebar */}
@@ -411,42 +408,20 @@ export default function BuiltInReports() {
             </div>
 
             {/* Category List */}
-            {sortedCategories.map((category) => {
-              const isStarred = starredCategories.has(category);
-              return (
-                <div
-                  key={category}
-                  className={`group flex items-center gap-1 rounded-lg transition-colors ${
-                    activeCategory === category
-                      ? "bg-workstream-blue text-white"
-                      : "text-gray-700 hover:bg-gray-100"
-                  }`}
-                >
-                  <button
-                    onClick={() => setActiveCategory(category)}
-                    className="flex-1 flex items-center justify-between px-3 py-2 text-sm font-medium"
-                  >
-                    <span>{category}</span>
-                    <span className="text-xs opacity-75">{categoryCounts[category] || 0}</span>
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleCategoryStar(category);
-                    }}
-                    className={`pr-2 transition-colors ${
-                      isStarred 
-                        ? "text-yellow-500" 
-                        : activeCategory === category
-                        ? "text-white/50 hover:text-yellow-500"
-                        : "text-gray-300 hover:text-yellow-500"
-                    }`}
-                  >
-                    <Star className={`w-3.5 h-3.5 ${isStarred ? "fill-current" : ""}`} />
-                  </button>
-                </div>
-              );
-            })}
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setActiveCategory(category)}
+                className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  activeCategory === category
+                    ? "bg-workstream-blue text-white"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <span>{category}</span>
+                <span className="text-xs opacity-75">{categoryCounts[category] || 0}</span>
+              </button>
+            ))}
           </nav>
         </div>
       </aside>
@@ -459,7 +434,7 @@ export default function BuiltInReports() {
             <div>
               <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">
                 {activeCategory === "all" || activeCategory === null
-                  ? "All Built-in Reports"
+                  ? "All Reports"
                   : activeCategory === "favorites"
                   ? "Favorite Reports"
                   : `${activeCategory} Reports`}
