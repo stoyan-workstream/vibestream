@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
+import { Star, ChevronDown, Play } from "lucide-react";
 
 // Helper to create URL-friendly slugs
 function createReportSlug(reportTitle: string, tabName: string): string {
@@ -25,6 +26,20 @@ const reports: Report[] = [
     tabNames: ["Table", "EIN/Location"],
     description: "This report contains employee demographic, employment, payroll, and retirement contribution details at the employee level with one row per employee record per payday.",
     category: "Benefits",
+  },
+  {
+    title: "Applicant Report",
+    tabCount: 3,
+    tabNames: ["Table", "By Source", "By Location"],
+    description: "See your applicants and filter by applicant details including application status, source, and location.",
+    category: "Hiring",
+  },
+  {
+    title: "Hiring Report",
+    tabCount: 5,
+    tabNames: ["Daily", "Weekly", "Monthly", "By Location", "By Brand"],
+    description: "See hiring performance and applicant engagement during specific time frames across your locations, positions and sources.",
+    category: "Hiring",
   },
   {
     title: "All Workstream Usage Report",
@@ -213,6 +228,11 @@ const categoryIcons: Record<string, React.ReactNode> = {
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
     </svg>
   ),
+  "Hiring": (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+    </svg>
+  ),
   "Payroll": (
     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -292,9 +312,21 @@ function CategoryCard({
 
   return (
     <div className="w-full">
+      {/* Pinned indicator badge */}
+      {isStarred && (
+        <div className="flex items-center gap-1.5 mb-2 text-xs font-medium text-yellow-600">
+          <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+            <path d="M5 3v18l7-3 7 3V3H5z" />
+          </svg>
+          <span>Pinned Category</span>
+        </div>
+      )}
+      
       {/* Unified Card Container */}
-      <div className={`relative bg-gradient-to-r from-white via-gray-50 to-white border border-gray-200 shadow-md hover:shadow-lg transition-all duration-300 ${
+      <div className={`relative bg-gradient-to-r from-white via-gray-50 to-white border shadow-md hover:shadow-lg transition-all duration-300 ${
         isOpen ? "rounded-t-2xl" : "rounded-2xl"
+      } ${
+        isStarred ? "border-yellow-300 ring-2 ring-yellow-100" : "border-gray-200"
       }`}>
         {/* Shine effect */}
         <div className={`absolute inset-0 bg-gradient-to-r from-white/50 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 ${
@@ -428,12 +460,15 @@ function CategoryCard({
   );
 }
 
+type SortOption = "alphabetical" | "report-count-high" | "report-count-low" | "starred-first";
+
 export default function BuiltInReports() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [starredCategories, setStarredCategories] = useState<Set<string>>(new Set());
   const [starredReports, setStarredReports] = useState<Set<string>>(new Set());
   const [openCategories, setOpenCategories] = useState<Set<string>>(new Set());
+  const [sortOption, setSortOption] = useState<SortOption>("starred-first");
 
   // Load starred items from localStorage
   useEffect(() => {
@@ -525,16 +560,34 @@ export default function BuiltInReports() {
     return grouped;
   }, [filteredReports]);
 
-  // Sort categories: starred first, then alphabetically
+  // Sort categories based on selected option
   const sortedCategories = useMemo(() => {
-    return Object.entries(groupedReports).sort(([catA], [catB]) => {
+    const entries = Object.entries(groupedReports);
+    
+    return entries.sort(([catA, reportsA], [catB, reportsB]) => {
       const aStarred = starredCategories.has(catA);
       const bStarred = starredCategories.has(catB);
-      if (aStarred && !bStarred) return -1;
-      if (!aStarred && bStarred) return 1;
-      return catA.localeCompare(catB);
+      
+      switch (sortOption) {
+        case "starred-first":
+          if (aStarred && !bStarred) return -1;
+          if (!aStarred && bStarred) return 1;
+          return catA.localeCompare(catB);
+          
+        case "alphabetical":
+          return catA.localeCompare(catB);
+          
+        case "report-count-high":
+          return reportsB.length - reportsA.length;
+          
+        case "report-count-low":
+          return reportsA.length - reportsB.length;
+          
+        default:
+          return 0;
+      }
     });
-  }, [groupedReports, starredCategories]);
+  }, [groupedReports, starredCategories, sortOption]);
 
   // Expand all categories
   const expandAll = () => {
@@ -617,6 +670,25 @@ export default function BuiltInReports() {
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-400">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+
+          {/* Sort Dropdown */}
+          <div className="relative">
+            <select
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value as SortOption)}
+              className="appearance-none pl-4 pr-10 py-3 bg-white border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-workstream-blue focus:border-transparent cursor-pointer transition-all"
+            >
+              <option value="starred-first">Starred First</option>
+              <option value="alphabetical">A-Z</option>
+              <option value="report-count-high">Most Reports</option>
+              <option value="report-count-low">Fewest Reports</option>
+            </select>
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-400">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
               </svg>
             </div>
           </div>
