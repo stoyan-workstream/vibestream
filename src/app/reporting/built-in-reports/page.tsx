@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Star, ChevronDown } from "lucide-react";
+import { Star, ChevronDown, X, ChevronLeft, ChevronRight, Award, DollarSign, FileCheck, Users, UserPlus, Wallet, Calculator, Clock, BarChart3 } from "lucide-react";
 
 // Helper to create URL-friendly slugs
 function createReportSlug(reportTitle: string, tabName: string): string {
@@ -241,9 +241,15 @@ function ReportRow({
               <Link
                 key={tab}
                 href={`/reporting/built-in-reports/${createReportSlug(report.title, tab)}`}
-                className="px-3 py-1 text-xs font-medium text-gray-600 bg-gray-50 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 border border-gray-200 rounded-full transition-all whitespace-nowrap"
+                className="group inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-workstream-blue bg-workstream-blue/10 hover:bg-workstream-blue hover:text-white rounded-lg transition-all border border-workstream-blue/20 hover:border-workstream-blue hover:shadow-md"
               >
-                {tab}
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <span>{tab}</span>
+                <svg className="w-3 h-3 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
               </Link>
             ))}
           </div>
@@ -255,12 +261,26 @@ function ReportRow({
 
 type SortOption = "alphabetical" | "report-count-high" | "report-count-low" | "starred-first";
 
+// Category icons mapping
+const categoryIcons: Record<string, React.ReactNode> = {
+  "Benefits": <Award className="w-4 h-4" />,
+  "Compensation": <DollarSign className="w-4 h-4" />,
+  "Compliance": <FileCheck className="w-4 h-4" />,
+  "Employee": <Users className="w-4 h-4" />,
+  "Hiring": <UserPlus className="w-4 h-4" />,
+  "Payroll": <Wallet className="w-4 h-4" />,
+  "Tax": <Calculator className="w-4 h-4" />,
+  "Time & Attendance": <Clock className="w-4 h-4" />,
+  "Usage": <BarChart3 className="w-4 h-4" />,
+};
+
 export default function BuiltInReports() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [starredReports, setStarredReports] = useState<Set<string>>(new Set());
   const [starredCategories, setStarredCategories] = useState<Set<string>>(new Set());
   const [sortOption, setSortOption] = useState<SortOption>("starred-first");
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   // Load starred items from localStorage
   useEffect(() => {
@@ -369,40 +389,77 @@ export default function BuiltInReports() {
   return (
     <div className="h-full flex">
       {/* Sticky Sidebar */}
-      <aside className="w-60 flex-shrink-0 bg-white border-r border-gray-200 overflow-y-auto">
-        <div className="p-6 sticky top-0 bg-white">
-          <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
-            Categories
-          </h2>
+      <aside className={`${sidebarCollapsed ? "w-16" : "w-72"} flex-shrink-0 bg-white border-r border-gray-200 transition-all duration-300 relative z-40 ${sidebarCollapsed ? "overflow-visible" : ""}`}>
+        <div className={`${sidebarCollapsed ? "p-3" : "p-6"} h-full ${sidebarCollapsed ? "overflow-y-auto overflow-x-visible" : "overflow-y-auto"} transition-all duration-300`}>
+          <div className="flex items-center justify-between mb-4">
+            {!sidebarCollapsed && (
+              <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">
+                Categories
+              </h2>
+            )}
+            <button
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors ml-auto"
+              title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            >
+              {sidebarCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+            </button>
+          </div>
           
           <nav className="space-y-1">
             {/* All Reports */}
             <button
               onClick={() => setActiveCategory("all")}
-              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`group/tooltip w-full flex items-center ${sidebarCollapsed ? "justify-center" : "justify-between"} px-3 py-2.5 rounded-lg text-sm font-medium transition-colors relative ${
                 activeCategory === "all" || activeCategory === null
                   ? "bg-workstream-blue text-white"
                   : "text-gray-700 hover:bg-gray-100"
               }`}
             >
-              <span>All Reports</span>
-              <span className="text-xs opacity-75">{reports.length}</span>
+              {sidebarCollapsed ? (
+                <>
+                  <BarChart3 className="w-5 h-5" />
+                  {/* Tooltip */}
+                  <span className="absolute left-full ml-2 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-[100] shadow-lg">
+                    All Reports
+                    <span className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-gray-900" />
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span>All Reports</span>
+                  <span className="text-xs opacity-75 bg-white/20 px-2 py-0.5 rounded-full">{reports.length}</span>
+                </>
+              )}
             </button>
 
             {/* Favorites */}
             <button
               onClick={() => setActiveCategory("favorites")}
-              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`group/tooltip w-full flex items-center ${sidebarCollapsed ? "justify-center" : "justify-between"} px-3 py-2.5 rounded-lg text-sm font-medium transition-colors relative ${
                 activeCategory === "favorites"
                   ? "bg-workstream-blue text-white"
                   : "text-gray-700 hover:bg-gray-100"
               }`}
             >
-              <div className="flex items-center gap-2">
-                <Star className="w-3.5 h-3.5 fill-current text-yellow-500" />
-                <span>Favorites</span>
-              </div>
-              <span className="text-xs opacity-75">{starredReports.size}</span>
+              {sidebarCollapsed ? (
+                <>
+                  <Star className="w-5 h-5 fill-current text-yellow-500" />
+                  {/* Tooltip */}
+                  <span className="absolute left-full ml-2 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-[100] shadow-lg">
+                    Favorites
+                    <span className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-gray-900" />
+                  </span>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center gap-2">
+                    <Star className="w-4 h-4 fill-current text-yellow-500" />
+                    <span>Favorites</span>
+                  </div>
+                  <span className={`text-xs opacity-75 ${activeCategory === "favorites" ? "bg-white/20" : "bg-gray-100"} px-2 py-0.5 rounded-full`}>{starredReports.size}</span>
+                </>
+              )}
             </button>
 
             {/* Divider */}
@@ -413,37 +470,61 @@ export default function BuiltInReports() {
             {/* Category List */}
             {sortedCategories.map((category) => {
               const isStarred = starredCategories.has(category);
+              const icon = categoryIcons[category];
+              const isActive = activeCategory === category;
+              
               return (
                 <div
                   key={category}
-                  className={`group flex items-center gap-1 rounded-lg transition-colors ${
-                    activeCategory === category
+                  className={`flex items-center rounded-lg transition-colors ${
+                    isActive
                       ? "bg-workstream-blue text-white"
                       : "text-gray-700 hover:bg-gray-100"
                   }`}
                 >
                   <button
                     onClick={() => setActiveCategory(category)}
-                    className="flex-1 flex items-center justify-between px-3 py-2 text-sm font-medium"
+                    className={`group/tooltip flex-1 flex items-center ${sidebarCollapsed ? "justify-center px-3 py-2.5" : "justify-between px-3 py-2.5"} text-sm font-medium min-w-0 relative`}
                   >
-                    <span>{category}</span>
-                    <span className="text-xs opacity-75">{categoryCounts[category] || 0}</span>
+                    {sidebarCollapsed ? (
+                      <>
+                        <div className="flex-shrink-0">{icon}</div>
+                        {/* Tooltip */}
+                        <span className="absolute left-full ml-2 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-[100] shadow-lg">
+                          {category}
+                          <span className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-gray-900" />
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                          <div className="flex-shrink-0">{icon}</div>
+                          <span className="truncate">{category}</span>
+                        </div>
+                        <span className={`text-xs opacity-75 ml-2 flex-shrink-0 ${isActive ? "bg-white/20" : "bg-gray-100"} px-2 py-0.5 rounded-full`}>
+                          {categoryCounts[category] || 0}
+                        </span>
+                      </>
+                    )}
                   </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleCategoryStar(category);
-                    }}
-                    className={`pr-2 transition-colors ${
-                      isStarred 
-                        ? "text-yellow-500" 
-                        : activeCategory === category
-                        ? "text-white/50 hover:text-yellow-500"
-                        : "text-gray-300 hover:text-yellow-500"
-                    }`}
-                  >
-                    <Star className={`w-3.5 h-3.5 ${isStarred ? "fill-current" : ""}`} />
-                  </button>
+                  {!sidebarCollapsed && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleCategoryStar(category);
+                      }}
+                      className={`pr-3 pl-1 py-2.5 transition-colors flex-shrink-0 ${
+                        isStarred 
+                          ? "text-yellow-500" 
+                          : isActive
+                          ? "text-white/50 hover:text-yellow-500"
+                          : "text-gray-300 hover:text-yellow-500"
+                      }`}
+                      title={isStarred ? "Remove from favorites" : "Add to favorites"}
+                    >
+                      <Star className={`w-4 h-4 ${isStarred ? "fill-current" : ""}`} />
+                    </button>
+                  )}
                 </div>
               );
             })}
@@ -452,7 +533,7 @@ export default function BuiltInReports() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main className="flex-1 flex flex-col overflow-hidden relative z-10">
         {/* Header */}
         <div className="flex-shrink-0 bg-white border-b border-gray-200 px-8 py-6">
           <div className="flex items-center justify-between mb-4">
@@ -500,10 +581,19 @@ export default function BuiltInReports() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search reports..."
-              className="w-full pl-11 pr-20 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-workstream-blue focus:border-transparent transition-all"
+              className="w-full pl-11 pr-28 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-workstream-blue focus:border-transparent transition-all"
             />
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-              <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs text-gray-400 bg-gray-100 rounded border border-gray-200">
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center gap-2">
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
+                  title="Clear search"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+              <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs text-gray-400 bg-gray-100 rounded border border-gray-200 pointer-events-none">
                 <span className="text-xs">⌘</span>K
               </kbd>
             </div>

@@ -244,7 +244,13 @@ export default function Sidebar() {
               <SubNavItem 
                 href="/reporting/built-in-reports" 
                 label="Built-in Reports" 
-                isActive={pathname.startsWith('/reporting/built-in-reports')}
+                isActive={pathname === '/reporting/built-in-reports'}
+                isCollapsed={isCollapsed}
+              />
+              <SubNavItem 
+                href="/reporting/built-in-reports-cards" 
+                label="Built-in Reports (Cards)" 
+                isActive={pathname === '/reporting/built-in-reports-cards'}
                 isCollapsed={isCollapsed}
               />
               <SubNavItem 
