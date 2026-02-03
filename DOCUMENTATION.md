@@ -17,62 +17,16 @@
 - **Search with clear button** (⌘K shortcut)
 - **Sort options** - Starred first, A-Z, by view count
 - **Hover tooltips** when sidebar is collapsed
-- **Alternative view** - Original 3D card view still available under "Built-in Reports (Cards)"
+- **Multiple view options:**
+  - Flat view (new sidebar layout)
+  - Grouped view (3D cards)
+  - Accordion view (original from main branch)
 
 **Why:** Eliminates scrolling through accordions. All categories visible at once.
 
 ---
 
-### 2. Custom Reports System
-
-**What changed:** Complete redesign with wizard-based creation flow.
-
-**6-Step Wizard:**
-1. Select base report
-2. Choose view
-3. Name your report
-4. Configure columns (toggle, reorder)
-5. Set grouping & sorting
-6. Add filters & date range
-
-**Custom Reports Page:**
-- Card-based grid layout
-- Actions: Run, Edit, Duplicate, Share, Schedule, Export (CSV/Excel/PDF), Delete
-- Schedule indicator (green badge when active)
-- Delete confirmation modal
-
-**Why:** Breaks down complex configuration into simple steps. Reduces errors.
-
----
-
-### 3. Report Scheduling
-
-**What changed:** Added comprehensive scheduling for both built-in and custom reports.
-
-**Scheduling Modal:**
-- Enable/disable toggle
-- Frequency: Daily, Weekly, Monthly, Quarterly, Yearly
-- Time & timezone selection
-- Email recipients (multiple)
-- Export format: CSV, XLSX, PDF
-- Include charts option (PDF only)
-
-**Sidebar Scheduling Section:**
-- Centralized list of all scheduled reports
-- Click "+" to add new schedule
-- View frequency and time at a glance
-- Click any schedule to edit
-
-**Visual Indicators:**
-- Green "Scheduled" badge on reports
-- Clock icon
-- Frequency display
-
-**Why:** Reduces clutter. Single place to manage all schedules.
-
----
-
-### 4. Dashboards
+### 2. Dashboards
 
 **What changed:** New tab-based interface for switching between dashboards.
 
@@ -91,9 +45,8 @@
 
 **Colors:**
 - Primary: Workstream Blue (#6B8AFF)
-- Scheduled: Green
 - Favorites: Yellow
-- Delete: Red
+- Neutral: Gray shades
 
 **Components:**
 - Pill-style buttons with icons
@@ -106,15 +59,17 @@
 ## Files Changed
 
 **New:**
-- `CustomReportWizard.tsx` - 6-step wizard
-- `ScheduleReportModal.tsx` - Scheduling interface
+- `built-in-reports-accordion/page.tsx` - Original accordion view preserved
+- `built-in-reports-cards/page.tsx` - 3D card grouped view
 
 **Updated:**
-- `built-in-reports/page.tsx` - Sidebar layout
-- `custom-reports/page.tsx` - Complete redesign
+- `built-in-reports/page.tsx` - New sidebar layout
 - `dashboards/page.tsx` - Tab interface
 - `globals.css` - Workstream blue colors
-- `Sidebar.tsx` - Reporting dropdown
+- `Sidebar.tsx` - Reporting dropdown with 3 view options
+
+**Unchanged:**
+- `custom-reports/page.tsx` - Remains as iframe embed
 
 **New Dependency:**
 - `lucide-react` - Icon library
@@ -125,12 +80,12 @@
 
 **Keyboard Shortcuts:**
 - ⌘K - Focus search
-- Escape - Close modals
 
 **Routes:**
-- `/reporting/built-in-reports` - Flat list view
-- `/reporting/built-in-reports-cards` - 3D card view
-- `/reporting/custom-reports` - Custom reports
+- `/reporting/built-in-reports` - Flat list view (new)
+- `/reporting/built-in-reports-cards` - Grouped 3D card view
+- `/reporting/built-in-reports-accordion` - Original accordion view
+- `/reporting/custom-reports` - Custom reports (iframe)
 - `/reporting/dashboards` - Dashboard tabs
 
 ---

@@ -2,9 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Star, ChevronDown, X, ChevronLeft, ChevronRight, Award, DollarSign, FileCheck, Users, UserPlus, Wallet, Calculator, Clock, BarChart3, Plus } from "lucide-react";
-import CustomReportWizard from "../../../components/CustomReportWizard";
-import ScheduleReportModal, { ScheduleConfig } from "../../../components/ScheduleReportModal";
+import { Star, ChevronDown, X, ChevronLeft, ChevronRight, Award, DollarSign, FileCheck, Users, UserPlus, Wallet, Calculator, Clock, BarChart3 } from "lucide-react";
 
 // Helper to create URL-friendly slugs
 function createReportSlug(reportTitle: string, tabName: string): string {
@@ -212,13 +210,11 @@ const allCategories = Array.from(new Set(reports.map((r) => r.category))).sort()
 function ReportRow({ 
   report, 
   isStarred, 
-  onToggleStar,
-  hasSchedule
+  onToggleStar
 }: { 
   report: Report; 
   isStarred: boolean; 
   onToggleStar: () => void;
-  hasSchedule: boolean;
 }) {
   return (
     <div className="group px-6 py-5 bg-white hover:bg-gray-50 border-b border-gray-100 transition-colors">
@@ -237,13 +233,6 @@ function ReportRow({
             >
               <Star className={`w-4 h-4 ${isStarred ? "fill-current" : ""}`} />
             </button>
-            {/* Schedule Indicator */}
-            {hasSchedule && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-50 text-green-700 border border-green-200 rounded-full text-xs font-medium">
-                <Clock className="w-3 h-3" />
-                Scheduled
-              </span>
-            )}
           </div>
           <p className="text-xs text-gray-500 mb-3">{report.description}</p>
           
@@ -293,10 +282,6 @@ export default function BuiltInReports() {
   const [starredCategories, setStarredCategories] = useState<Set<string>>(new Set());
   const [sortOption, setSortOption] = useState<SortOption>("starred-first");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [showWizard, setShowWizard] = useState(false);
-  const [showScheduleModal, setShowScheduleModal] = useState<string | null>(null);
-  const [reportSchedules, setReportSchedules] = useState<Record<string, ScheduleConfig>>({});
-  const [selectedReportForSchedule, setSelectedReportForSchedule] = useState<string>("");
 
   // Load starred items from localStorage
   useEffect(() => {
@@ -546,66 +531,6 @@ export default function BuiltInReports() {
             })}
           </nav>
 
-          {/* Scheduled Reports Section */}
-          {!sidebarCollapsed && (
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-xs font-semibold text-gray-900 uppercase tracking-wider">
-                  Scheduled Reports
-                </h3>
-                <button
-                  onClick={() => setShowScheduleModal("new")}
-                  className="p-1 text-workstream-blue hover:bg-blue-50 rounded transition-colors"
-                  title="Schedule a report"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
-              </div>
-
-              {Object.entries(reportSchedules).filter(([_, schedule]) => schedule.enabled).length > 0 ? (
-                <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {Object.entries(reportSchedules)
-                    .filter(([_, schedule]) => schedule.enabled)
-                    .map(([reportTitle, schedule]) => (
-                      <button
-                        key={reportTitle}
-                        onClick={() => setShowScheduleModal(reportTitle)}
-                        className="w-full text-left p-2 rounded-lg hover:bg-gray-50 transition-colors group"
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="flex-1 min-w-0">
-                            <p className="text-xs font-medium text-gray-900 truncate">{reportTitle}</p>
-                            <div className="flex items-center gap-1 mt-1">
-                              <Clock className="w-3 h-3 text-green-600" />
-                              <span className="text-xs text-green-600 font-medium">
-                                {schedule.frequency.charAt(0).toUpperCase() + schedule.frequency.slice(1)}
-                              </span>
-                              <span className="text-xs text-gray-500">at {schedule.time}</span>
-                            </div>
-                          </div>
-                          <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <ChevronRight className="w-3 h-3 text-gray-400" />
-                          </div>
-                        </div>
-                      </button>
-                    ))}
-                </div>
-              ) : (
-                <div className="text-center py-6">
-                  <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <Clock className="w-5 h-5 text-gray-400" />
-                  </div>
-                  <p className="text-xs text-gray-500 mb-3">No scheduled reports</p>
-                  <button
-                    onClick={() => setShowScheduleModal("new")}
-                    className="text-xs text-workstream-blue hover:text-workstream-blue-dark font-medium"
-                  >
-                    Schedule your first report
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
         </div>
       </aside>
 
@@ -628,15 +553,6 @@ export default function BuiltInReports() {
             </div>
 
             <div className="flex items-center gap-3">
-              {/* Create Custom Report Button */}
-              <button
-                onClick={() => setShowWizard(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-workstream-blue text-white text-sm font-medium rounded-lg hover:bg-workstream-blue-dark transition-all shadow-sm hover:shadow-md"
-              >
-                <Plus className="w-4 h-4" />
-                Create Custom Report
-              </button>
-
               {/* Sort Dropdown */}
               <div className="relative">
               <select
@@ -698,7 +614,6 @@ export default function BuiltInReports() {
                   report={report}
                   isStarred={starredReports.has(report.title)}
                   onToggleStar={() => toggleReportStar(report.title)}
-                  hasSchedule={!!reportSchedules[report.title]?.enabled}
                 />
               ))}
             </div>
@@ -727,90 +642,6 @@ export default function BuiltInReports() {
         </div>
       </main>
 
-      {/* Custom Report Wizard */}
-      {showWizard && (
-        <CustomReportWizard
-          reports={reports}
-          onClose={() => setShowWizard(false)}
-        />
-      )}
-
-      {/* Schedule Report Modal */}
-      {showScheduleModal && showScheduleModal === "new" && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[200] p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900">Schedule a Report</h2>
-              <button
-                onClick={() => {
-                  setShowScheduleModal(null);
-                  setSelectedReportForSchedule("");
-                }}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto px-6 py-6">
-              <label className="block text-sm font-medium text-gray-700 mb-3">Select Report</label>
-              <select
-                value={selectedReportForSchedule}
-                onChange={(e) => setSelectedReportForSchedule(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-workstream-blue text-base"
-                autoFocus
-              >
-                <option value="">Choose a report...</option>
-                {reports.map((report) => (
-                  <option key={report.title} value={report.title}>
-                    {report.title}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50">
-              <button
-                onClick={() => {
-                  setShowScheduleModal(null);
-                  setSelectedReportForSchedule("");
-                }}
-                className="px-4 py-2 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  if (selectedReportForSchedule) {
-                    setShowScheduleModal(selectedReportForSchedule);
-                  }
-                }}
-                disabled={!selectedReportForSchedule}
-                className="px-6 py-2 bg-workstream-blue text-white font-medium rounded-lg hover:bg-workstream-blue-dark transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Continue
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showScheduleModal && showScheduleModal !== "new" && (
-        <ScheduleReportModal
-          reportName={showScheduleModal}
-          existingSchedule={reportSchedules[showScheduleModal]}
-          onClose={() => {
-            setShowScheduleModal(null);
-            setSelectedReportForSchedule("");
-          }}
-          onSave={(schedule) => {
-            setReportSchedules({
-              ...reportSchedules,
-              [showScheduleModal]: schedule,
-            });
-            setShowScheduleModal(null);
-            setSelectedReportForSchedule("");
-          }}
-        />
-      )}
     </div>
   );
 }
