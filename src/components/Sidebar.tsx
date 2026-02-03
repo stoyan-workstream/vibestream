@@ -243,14 +243,20 @@ export default function Sidebar() {
               />
               <SubNavItem 
                 href="/reporting/built-in-reports" 
-                label="Built-in Reports" 
+                label="Built-in Reports (Flat)" 
                 isActive={pathname === '/reporting/built-in-reports'}
                 isCollapsed={isCollapsed}
               />
               <SubNavItem 
                 href="/reporting/built-in-reports-cards" 
-                label="Built-in Reports (Cards)" 
+                label="Built-in Reports (Grouped)" 
                 isActive={pathname === '/reporting/built-in-reports-cards'}
+                isCollapsed={isCollapsed}
+              />
+              <SubNavItem 
+                href="/reporting/built-in-reports-accordion" 
+                label="Built-in Reports (Accordion)" 
+                isActive={pathname === '/reporting/built-in-reports-accordion'}
                 isCollapsed={isCollapsed}
               />
               <SubNavItem 
