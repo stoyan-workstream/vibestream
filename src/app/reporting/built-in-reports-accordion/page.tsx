@@ -214,18 +214,12 @@ export default function BuiltInReports() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [pinnedReports, setPinnedReports] = useState<Set<string>>(new Set());
-  const [pinnedCategories, setPinnedCategories] = useState<Set<string>>(new Set());
-  const [openCategories, setOpenCategories] = useState<Set<string>>(new Set());
 
   // Load pinned items from localStorage
   useEffect(() => {
     const savedReports = localStorage.getItem("pinnedReports");
-    const savedCategories = localStorage.getItem("pinnedCategories");
     if (savedReports) {
       setPinnedReports(new Set(JSON.parse(savedReports)));
-    }
-    if (savedCategories) {
-      setPinnedCategories(new Set(JSON.parse(savedCategories)));
     }
   }, []);
 
@@ -239,33 +233,6 @@ export default function BuiltInReports() {
         newSet.add(reportTitle);
       }
       localStorage.setItem("pinnedReports", JSON.stringify(Array.from(newSet)));
-      return newSet;
-    });
-  };
-
-  // Toggle pin for categories
-  const toggleCategoryPin = (category: string) => {
-    setPinnedCategories((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(category)) {
-        newSet.delete(category);
-      } else {
-        newSet.add(category);
-      }
-      localStorage.setItem("pinnedCategories", JSON.stringify(Array.from(newSet)));
-      return newSet;
-    });
-  };
-
-  // Toggle category open/close
-  const toggleCategory = (category: string) => {
-    setOpenCategories((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(category)) {
-        newSet.delete(category);
-      } else {
-        newSet.add(category);
-      }
       return newSet;
     });
   };
@@ -312,16 +279,10 @@ export default function BuiltInReports() {
     return Array.from(new Set(reports.map((r) => r.category))).sort();
   }, []);
 
-  // Sort categories: pinned first, then alphabetically
+  // Sort categories alphabetically
   const sortedCategories = useMemo(() => {
-    return Object.keys(groupedReports).sort((a, b) => {
-      const aPinned = pinnedCategories.has(a);
-      const bPinned = pinnedCategories.has(b);
-      if (aPinned && !bPinned) return -1;
-      if (!aPinned && bPinned) return 1;
-      return a.localeCompare(b);
-    });
-  }, [groupedReports, pinnedCategories]);
+    return Object.keys(groupedReports).sort((a, b) => a.localeCompare(b));
+  }, [groupedReports]);
 
   return (
     <div className="p-8 lg:p-12 min-h-full w-full">
@@ -393,46 +354,10 @@ export default function BuiltInReports() {
         </div>
       </div>
 
-      {/* Category Pills */}
-      <div className="flex gap-2 overflow-x-auto pb-4 mb-8">
-        {sortedCategories.map((category) => {
-          const categoryReports = groupedReports[category];
-          const isPinned = pinnedCategories.has(category);
-          return (
-            <button
-              key={category}
-              onClick={() => toggleCategory(category)}
-              className={`flex-shrink-0 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all ${
-                openCategories.has(category)
-                  ? "bg-workstream-blue text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              {categoryIcons[category]}
-              {category}
-              <span className="text-xs opacity-75">({categoryReports.length})</span>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleCategoryPin(category);
-                }}
-                className={`ml-1 ${isPinned ? "opacity-100" : "opacity-50 hover:opacity-100"}`}
-                title={isPinned ? "Unpin category" : "Pin category"}
-              >
-                <Pin className={`w-3 h-3 ${isPinned ? "fill-current" : ""}`} />
-              </button>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Reports List - Accordion Style */}
+      {/* Reports List - Grouped by Category */}
       <div className="space-y-4">
         {sortedCategories.map((category) => {
           const categoryReports = groupedReports[category];
-          const isOpen = openCategories.has(category);
-          
-          if (!isOpen) return null;
 
           return (
             <div key={category} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
