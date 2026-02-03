@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
+import { Pin, Award, DollarSign, FileCheck, Users, UserPlus, Wallet, Calculator, Clock, BarChart3 } from "lucide-react";
 
 // Helper to create URL-friendly slugs
 function createReportSlug(reportTitle: string, tabName: string): string {
@@ -191,48 +192,16 @@ const reports: Report[] = [
 
 const categories = Array.from(new Set(reports.map((r) => r.category))).sort();
 
-// Category icons
-const categoryIcons: Record<string, React.ReactNode> = {
-  "Benefits": (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-    </svg>
-  ),
-  "Compensation": (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
-  ),
-  "Compliance": (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-    </svg>
-  ),
-  "Employee": (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-    </svg>
-  ),
-  "Payroll": (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-    </svg>
-  ),
-  "Tax": (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z" />
-    </svg>
-  ),
-  "Time & Attendance": (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
-  ),
-  "Usage": (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-    </svg>
-  ),
+const categoryIcons: Record<string, React.ReactElement> = {
+  "Benefits": <Award className="w-4 h-4" />,
+  "Compensation": <DollarSign className="w-4 h-4" />,
+  "Compliance": <FileCheck className="w-4 h-4" />,
+  "Employee": <Users className="w-4 h-4" />,
+  "Hiring": <UserPlus className="w-4 h-4" />,
+  "Payroll": <Wallet className="w-4 h-4" />,
+  "Tax": <Calculator className="w-4 h-4" />,
+  "Time & Attendance": <Clock className="w-4 h-4" />,
+  "Usage": <BarChart3 className="w-4 h-4" />,
 };
 
 const SearchIcon = () => (
@@ -241,15 +210,65 @@ const SearchIcon = () => (
   </svg>
 );
 
-const DocumentIcon = () => (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-  </svg>
-);
-
 export default function BuiltInReports() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [pinnedReports, setPinnedReports] = useState<Set<string>>(new Set());
+  const [pinnedCategories, setPinnedCategories] = useState<Set<string>>(new Set());
+  const [openCategories, setOpenCategories] = useState<Set<string>>(new Set());
+
+  // Load pinned items from localStorage
+  useEffect(() => {
+    const savedReports = localStorage.getItem("pinnedReports");
+    const savedCategories = localStorage.getItem("pinnedCategories");
+    if (savedReports) {
+      setPinnedReports(new Set(JSON.parse(savedReports)));
+    }
+    if (savedCategories) {
+      setPinnedCategories(new Set(JSON.parse(savedCategories)));
+    }
+  }, []);
+
+  // Toggle pin for reports
+  const toggleReportPin = (reportTitle: string) => {
+    setPinnedReports((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(reportTitle)) {
+        newSet.delete(reportTitle);
+      } else {
+        newSet.add(reportTitle);
+      }
+      localStorage.setItem("pinnedReports", JSON.stringify(Array.from(newSet)));
+      return newSet;
+    });
+  };
+
+  // Toggle pin for categories
+  const toggleCategoryPin = (category: string) => {
+    setPinnedCategories((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(category)) {
+        newSet.delete(category);
+      } else {
+        newSet.add(category);
+      }
+      localStorage.setItem("pinnedCategories", JSON.stringify(Array.from(newSet)));
+      return newSet;
+    });
+  };
+
+  // Toggle category open/close
+  const toggleCategory = (category: string) => {
+    setOpenCategories((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(category)) {
+        newSet.delete(category);
+      } else {
+        newSet.add(category);
+      }
+      return newSet;
+    });
+  };
 
   // Keyboard shortcut for search
   useEffect(() => {
@@ -288,12 +307,28 @@ export default function BuiltInReports() {
     return grouped;
   }, [filteredReports]);
 
+  // Get all categories
+  const categories = useMemo(() => {
+    return Array.from(new Set(reports.map((r) => r.category))).sort();
+  }, []);
+
+  // Sort categories: pinned first, then alphabetically
+  const sortedCategories = useMemo(() => {
+    return Object.keys(groupedReports).sort((a, b) => {
+      const aPinned = pinnedCategories.has(a);
+      const bPinned = pinnedCategories.has(b);
+      if (aPinned && !bPinned) return -1;
+      if (!aPinned && bPinned) return 1;
+      return a.localeCompare(b);
+    });
+  }, [groupedReports, pinnedCategories]);
+
   return (
     <div className="p-8 lg:p-12 min-h-full w-full">
       {/* Page Header */}
       <div className="mb-10">
-        <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">Built-in Reports</h1>
-        <p className="mt-1 text-gray-500">Browse and search pre-configured reports</p>
+        <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">Built-in Reports (Grouped View)</h1>
+        <p className="mt-1 text-gray-500">Browse reports organized by category</p>
       </div>
 
       {/* Stats Summary */}
@@ -358,83 +393,115 @@ export default function BuiltInReports() {
         </div>
       </div>
 
-      {/* Reports List */}
-      <div className="space-y-12">
-        {Object.entries(groupedReports)
-          .sort(([a], [b]) => a.localeCompare(b))
-          .map(([category, categoryReports]) => (
-            <section key={category}>
+      {/* Category Pills */}
+      <div className="flex gap-2 overflow-x-auto pb-4 mb-8">
+        {sortedCategories.map((category) => {
+          const categoryReports = groupedReports[category];
+          const isPinned = pinnedCategories.has(category);
+          return (
+            <button
+              key={category}
+              onClick={() => toggleCategory(category)}
+              className={`flex-shrink-0 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all ${
+                openCategories.has(category)
+                  ? "bg-workstream-blue text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              {categoryIcons[category]}
+              {category}
+              <span className="text-xs opacity-75">({categoryReports.length})</span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleCategoryPin(category);
+                }}
+                className={`ml-1 ${isPinned ? "opacity-100" : "opacity-50 hover:opacity-100"}`}
+                title={isPinned ? "Unpin category" : "Pin category"}
+              >
+                <Pin className={`w-3 h-3 ${isPinned ? "fill-current" : ""}`} />
+              </button>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Reports List - Accordion Style */}
+      <div className="space-y-4">
+        {sortedCategories.map((category) => {
+          const categoryReports = groupedReports[category];
+          const isOpen = openCategories.has(category);
+          
+          if (!isOpen) return null;
+
+          return (
+            <div key={category} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
               {/* Category Header */}
-              <div className="flex items-center gap-3 mb-5">
-                <span className="text-gray-400">
-                  {categoryIcons[category]}
-                </span>
-                <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">
-                  {category}
-                </h2>
-                <span className="text-sm text-gray-400">{categoryReports.length}</span>
+              <div className="bg-gray-50 px-6 py-3 border-b border-gray-200">
+                <div className="flex items-center gap-3">
+                  <span className="text-workstream-blue">
+                    {categoryIcons[category]}
+                  </span>
+                  <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">
+                    {category}
+                  </h2>
+                  <span className="text-sm text-gray-500">({categoryReports.length} reports)</span>
+                </div>
               </div>
 
               {/* Reports */}
-              <div className="space-y-3">
-                {categoryReports.map((report) => (
-                  <article
-                    key={report.title}
-                    className="group bg-white rounded-lg border border-gray-200 p-5 hover:border-gray-300 hover:shadow-sm transition-all duration-200 cursor-pointer"
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        {/* Report Title */}
-                        <div className="flex items-center gap-2.5">
-                          <span className="text-gray-400 group-hover:text-gray-600 transition-colors">
-                            <DocumentIcon />
-                          </span>
-                          <h3 className="font-medium text-gray-900 group-hover:text-black transition-colors">
-                            {report.title}
-                          </h3>
-                        </div>
-
-                        {/* Description */}
-                        <p className="mt-2 text-sm text-gray-500 leading-relaxed line-clamp-2 pl-6.5">
-                          {report.description}
-                        </p>
-
-                        {/* Report Variants */}
-                        <div className="mt-3 flex items-center gap-1 text-sm pl-6.5 flex-wrap">
-                          {report.tabNames.slice(0, 5).map((tab, index) => (
-                            <span key={tab} className="flex items-center">
+              <div className="divide-y divide-gray-100">
+                {categoryReports.map((report) => {
+                  const isPinned = pinnedReports.has(report.title);
+                  return (
+                    <div
+                      key={report.title}
+                      className="group px-6 py-5 hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="text-sm font-semibold text-gray-900">{report.title}</h3>
+                            {/* Pin Toggle */}
+                            <button
+                              onClick={() => toggleReportPin(report.title)}
+                              className={`flex-shrink-0 transition-colors ${
+                                isPinned ? "text-workstream-blue" : "text-gray-300 hover:text-workstream-blue"
+                              }`}
+                              title={isPinned ? "Unpin report" : "Pin report"}
+                            >
+                              <Pin className={`w-4 h-4 ${isPinned ? "fill-current" : ""}`} />
+                            </button>
+                          </div>
+                          <p className="text-xs text-gray-500 mb-3">{report.description}</p>
+                          
+                          {/* Action Badges */}
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {report.tabNames.map((tab) => (
                               <Link
+                                key={tab}
                                 href={`/reporting/built-in-reports/${createReportSlug(report.title, tab)}`}
-                                className="text-gray-600 hover:text-gray-900 hover:underline transition-colors"
-                                onClick={(e) => e.stopPropagation()}
+                                className="group inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-workstream-blue bg-workstream-blue/10 hover:bg-workstream-blue hover:text-white rounded-lg transition-all border border-workstream-blue/20 hover:border-workstream-blue hover:shadow-md"
                               >
-                                {tab}
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                </svg>
+                                <span>{tab}</span>
+                                <svg className="w-3 h-3 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                </svg>
                               </Link>
-                              {index < Math.min(report.tabNames.length, 5) - 1 && (
-                                <span className="text-gray-300 mx-2">·</span>
-                              )}
-                            </span>
-                          ))}
-                          {report.tabNames.length > 5 && (
-                            <span className="text-gray-400 ml-1">
-                              +{report.tabNames.length - 5} more
-                            </span>
-                          )}
+                            ))}
+                          </div>
                         </div>
-                      </div>
-
-                      {/* Arrow */}
-                      <div className="flex-shrink-0 text-gray-300 group-hover:text-gray-500 group-hover:translate-x-0.5 transition-all">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
                       </div>
                     </div>
-                  </article>
-                ))}
+                  );
+                })}
               </div>
-            </section>
-          ))}
+            </div>
+          );
+        })}
       </div>
 
       {/* Empty State */}

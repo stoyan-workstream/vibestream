@@ -248,14 +248,8 @@ export default function Sidebar() {
                 isCollapsed={isCollapsed}
               />
               <SubNavItem 
-                href="/reporting/built-in-reports-cards" 
-                label="Built-in Reports (Grouped)" 
-                isActive={pathname === '/reporting/built-in-reports-cards'}
-                isCollapsed={isCollapsed}
-              />
-              <SubNavItem 
                 href="/reporting/built-in-reports-accordion" 
-                label="Built-in Reports (Accordion)" 
+                label="Built-in Reports (Grouped)" 
                 isActive={pathname === '/reporting/built-in-reports-accordion'}
                 isCollapsed={isCollapsed}
               />
