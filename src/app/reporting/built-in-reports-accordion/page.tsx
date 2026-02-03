@@ -289,7 +289,7 @@ export default function BuiltInReports() {
   }, [filteredReports]);
 
   return (
-    <div className="p-8 lg:p-12 min-h-full max-w-6xl">
+    <div className="p-8 lg:p-12 min-h-full w-full">
       {/* Page Header */}
       <div className="mb-10">
         <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">Built-in Reports</h1>

@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
-import { X } from "lucide-react";
+import { X, Pin } from "lucide-react";
 
 // Helper to create URL-friendly slugs
 function createReportSlug(reportTitle: string, tabName: string): string {
@@ -254,37 +254,25 @@ const ChevronDownIcon = () => (
   </svg>
 );
 
-const StarIcon = ({ filled }: { filled: boolean }) => (
-  <svg 
-    className="w-5 h-5" 
-    fill={filled ? "currentColor" : "none"} 
-    stroke="currentColor" 
-    viewBox="0 0 24 24"
-  >
-    <path 
-      strokeLinecap="round" 
-      strokeLinejoin="round" 
-      strokeWidth={1.5} 
-      d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" 
-    />
-  </svg>
+const PinIcon = () => (
+  <Pin className="w-4 h-4" />
 );
 
 // Category Card Component with Dropdown
 function CategoryCard({ 
   category, 
   reports,
-  isStarred,
-  onToggleStar,
-  starredReports,
-  onToggleReportStar
+  isPinned,
+  onTogglePin,
+  pinnedReports,
+  onToggleReportPin
 }: { 
   category: string; 
   reports: Report[];
-  isStarred: boolean;
-  onToggleStar: () => void;
-  starredReports: Set<string>;
-  onToggleReportStar: (reportTitle: string) => void;
+  isPinned: boolean;
+  onTogglePin: () => void;
+  pinnedReports: Set<string>;
+  onToggleReportPin: (reportTitle: string) => void;
 }) {
 
   return (
@@ -308,16 +296,16 @@ function CategoryCard({
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      onToggleStar();
+                      onTogglePin();
                     }}
                     className={`p-1 rounded-full transition-colors ${
-                      isStarred 
-                        ? "text-yellow-500 hover:text-yellow-600" 
-                        : "text-gray-300 hover:text-yellow-500"
+                      isPinned 
+                        ? "text-workstream-blue hover:text-workstream-blue-dark" 
+                        : "text-gray-300 hover:text-workstream-blue"
                     }`}
-                    title={isStarred ? "Remove from favorites" : "Add to favorites"}
+                    title={isPinned ? "Unpin category" : "Pin category"}
                   >
-                    <StarIcon filled={isStarred} />
+                    <PinIcon />
                   </button>
                 </div>
                 <p className="text-sm text-gray-500 mt-1">{reports.length} reports available</p>
@@ -335,7 +323,7 @@ function CategoryCard({
       <div className="mt-3 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
           <div className="p-4 space-y-3">
             {reports.map((report) => {
-              const isReportStarred = starredReports.has(report.title);
+              const isReportPinned = pinnedReports.has(report.title);
               return (
                 <div
                   key={report.title}
@@ -353,16 +341,16 @@ function CategoryCard({
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            onToggleReportStar(report.title);
+                            onToggleReportPin(report.title);
                           }}
                           className={`p-0.5 rounded transition-colors ${
-                            isReportStarred 
-                              ? "text-yellow-500 hover:text-yellow-600" 
-                              : "text-gray-300 hover:text-yellow-500"
+                            isReportPinned 
+                              ? "text-workstream-blue hover:text-workstream-blue-dark" 
+                              : "text-gray-300 hover:text-workstream-blue"
                           }`}
-                          title={isReportStarred ? "Remove from favorites" : "Add to favorites"}
+                          title={isReportPinned ? "Unpin report" : "Pin report"}
                         >
-                          <StarIcon filled={isReportStarred} />
+                          <PinIcon />
                         </button>
                       </div>
                       <p className="text-xs text-gray-500 mb-3 leading-relaxed">
@@ -396,45 +384,45 @@ function CategoryCard({
 export default function BuiltInReports() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [starredCategories, setStarredCategories] = useState<Set<string>>(new Set());
-  const [starredReports, setStarredReports] = useState<Set<string>>(new Set());
+  const [pinnedCategories, setPinnedCategories] = useState<Set<string>>(new Set());
+  const [pinnedReports, setPinnedReports] = useState<Set<string>>(new Set());
 
-  // Load starred items from localStorage
+  // Load pinned items from localStorage
   useEffect(() => {
-    const savedCategories = localStorage.getItem("starredCategories");
-    const savedReports = localStorage.getItem("starredReports");
+    const savedCategories = localStorage.getItem("pinnedCategories");
+    const savedReports = localStorage.getItem("pinnedReports");
     if (savedCategories) {
-      setStarredCategories(new Set(JSON.parse(savedCategories)));
+      setPinnedCategories(new Set(JSON.parse(savedCategories)));
     }
     if (savedReports) {
-      setStarredReports(new Set(JSON.parse(savedReports)));
+      setPinnedReports(new Set(JSON.parse(savedReports)));
     }
   }, []);
 
-  // Save starred categories to localStorage
-  const toggleCategoryStar = (category: string) => {
-    setStarredCategories((prev) => {
+  // Save pinned categories to localStorage
+  const toggleCategoryPin = (category: string) => {
+    setPinnedCategories((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(category)) {
         newSet.delete(category);
       } else {
         newSet.add(category);
       }
-      localStorage.setItem("starredCategories", JSON.stringify(Array.from(newSet)));
+      localStorage.setItem("pinnedCategories", JSON.stringify(Array.from(newSet)));
       return newSet;
     });
   };
 
-  // Save starred reports to localStorage
-  const toggleReportStar = (reportTitle: string) => {
-    setStarredReports((prev) => {
+  // Save pinned reports to localStorage
+  const toggleReportPin = (reportTitle: string) => {
+    setPinnedReports((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(reportTitle)) {
         newSet.delete(reportTitle);
       } else {
         newSet.add(reportTitle);
       }
-      localStorage.setItem("starredReports", JSON.stringify(Array.from(newSet)));
+      localStorage.setItem("pinnedReports", JSON.stringify(Array.from(newSet)));
       return newSet;
     });
   };
@@ -477,20 +465,20 @@ export default function BuiltInReports() {
     return grouped;
   }, [filteredReports]);
 
-  // Sort categories: starred first, then alphabetically
+  // Sort categories: pinned first, then alphabetically
   const sortedCategories = useMemo(() => {
     return Object.entries(groupedReports).sort(([catA], [catB]) => {
-      const aStarred = starredCategories.has(catA);
-      const bStarred = starredCategories.has(catB);
-      if (aStarred && !bStarred) return -1;
-      if (!aStarred && bStarred) return 1;
+      const aPinned = pinnedCategories.has(catA);
+      const bPinned = pinnedCategories.has(catB);
+      if (aPinned && !bPinned) return -1;
+      if (!aPinned && bPinned) return 1;
       return catA.localeCompare(catB);
     });
-  }, [groupedReports, starredCategories]);
+  }, [groupedReports, pinnedCategories]);
 
 
   return (
-    <div className="p-8 lg:p-12 min-h-full max-w-6xl">
+    <div className="p-8 lg:p-12 min-h-full w-full">
       {/* Page Header */}
       <div className="mb-10">
         <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">Built-in Reports</h1>
@@ -508,8 +496,8 @@ export default function BuiltInReports() {
           <span className="ml-2 font-medium text-gray-900">{categories.length}</span>
         </div>
         <div>
-          <span className="text-gray-400">Starred</span>
-          <span className="ml-2 font-medium text-yellow-600">{starredCategories.size + starredReports.size}</span>
+          <span className="text-gray-400">Pinned</span>
+          <span className="ml-2 font-medium text-workstream-blue">{pinnedCategories.size + pinnedReports.size}</span>
         </div>
         {searchQuery && (
           <div className="animate-fade-in">
@@ -575,23 +563,23 @@ export default function BuiltInReports() {
 
       </div>
 
-      {/* Starred Reports Quick Access */}
-      {starredReports.size > 0 && !searchQuery && !selectedCategory && (
+      {/* Pinned Reports Quick Access */}
+      {pinnedReports.size > 0 && !searchQuery && !selectedCategory && (
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-4">
-            <span className="text-yellow-500">
-              <StarIcon filled={true} />
+            <span className="text-workstream-blue">
+              <PinIcon />
             </span>
-            <h2 className="text-lg font-semibold text-gray-900">Favorite Reports</h2>
+            <h2 className="text-lg font-semibold text-gray-900">Pinned Reports</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {Array.from(starredReports).map((reportTitle) => {
+            {Array.from(pinnedReports).map((reportTitle) => {
               const report = reports.find((r) => r.title === reportTitle);
               if (!report) return null;
               return (
                 <div
                   key={reportTitle}
-                  className="p-4 bg-gradient-to-br from-yellow-50 to-white border border-yellow-200 rounded-xl hover:shadow-md transition-all"
+                  className="p-4 bg-gradient-to-br from-blue-50 to-white border border-blue-200 rounded-xl hover:shadow-md transition-all"
                 >
                   <div className="flex items-start gap-2 mb-2">
                     <span className="text-gray-400 mt-0.5 flex-shrink-0">
@@ -601,10 +589,10 @@ export default function BuiltInReports() {
                       {report.title}
                     </h4>
                     <button
-                      onClick={() => toggleReportStar(reportTitle)}
-                      className="text-yellow-500 hover:text-yellow-600 transition-colors"
+                      onClick={() => toggleReportPin(reportTitle)}
+                      className="text-workstream-blue hover:text-workstream-blue-dark transition-colors"
                     >
-                      <StarIcon filled={true} />
+                      <PinIcon />
                     </button>
                   </div>
                   <div className="space-y-1.5 mt-3">
@@ -643,10 +631,10 @@ export default function BuiltInReports() {
             key={category}
             category={category}
             reports={categoryReports}
-            isStarred={starredCategories.has(category)}
-            onToggleStar={() => toggleCategoryStar(category)}
-            starredReports={starredReports}
-            onToggleReportStar={toggleReportStar}
+            isPinned={pinnedCategories.has(category)}
+            onTogglePin={() => toggleCategoryPin(category)}
+            pinnedReports={pinnedReports}
+            onToggleReportPin={toggleReportPin}
           />
         ))}
       </div>
