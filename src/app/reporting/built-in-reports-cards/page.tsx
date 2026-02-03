@@ -277,9 +277,7 @@ function CategoryCard({
   isStarred,
   onToggleStar,
   starredReports,
-  onToggleReportStar,
-  isOpen,
-  onToggle
+  onToggleReportStar
 }: { 
   category: string; 
   reports: Report[];
@@ -287,8 +285,6 @@ function CategoryCard({
   onToggleStar: () => void;
   starredReports: Set<string>;
   onToggleReportStar: (reportTitle: string) => void;
-  isOpen: boolean;
-  onToggle: () => void;
 }) {
 
   return (
@@ -328,22 +324,6 @@ function CategoryCard({
               </div>
             </div>
 
-            {/* Right: Toggle Button */}
-            <button
-              onClick={onToggle}
-              className="flex items-center gap-3 px-5 py-3 bg-white border border-gray-200 rounded-xl hover:border-workstream-blue hover:shadow-sm transition-all duration-200 ml-4"
-            >
-              <span className="text-sm font-medium text-gray-700">
-                {isOpen ? "Hide" : "View"} reports
-              </span>
-              <div
-                className={`text-gray-400 transition-transform duration-200 ${
-                  isOpen ? "rotate-180" : ""
-                }`}
-              >
-                <ChevronDownIcon />
-              </div>
-            </button>
           </div>
         </div>
 
@@ -351,9 +331,8 @@ function CategoryCard({
         <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-workstream-blue to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
       </div>
 
-      {/* Dropdown Content - Flows naturally below */}
-      {isOpen && (
-        <div className="mt-3 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden animate-slideDown">
+      {/* Reports List - Always visible */}
+      <div className="mt-3 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
           <div className="p-4 space-y-3">
             {reports.map((report) => {
               const isReportStarred = starredReports.has(report.title);
@@ -410,7 +389,6 @@ function CategoryCard({
             })}
           </div>
         </div>
-      )}
     </div>
   );
 }
@@ -420,7 +398,6 @@ export default function BuiltInReports() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [starredCategories, setStarredCategories] = useState<Set<string>>(new Set());
   const [starredReports, setStarredReports] = useState<Set<string>>(new Set());
-  const [openCategories, setOpenCategories] = useState<Set<string>>(new Set());
 
   // Load starred items from localStorage
   useEffect(() => {
@@ -462,18 +439,6 @@ export default function BuiltInReports() {
     });
   };
 
-  // Toggle individual category
-  const toggleCategory = (category: string) => {
-    setOpenCategories((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(category)) {
-        newSet.delete(category);
-      } else {
-        newSet.add(category);
-      }
-      return newSet;
-    });
-  };
 
   // Keyboard shortcut for search
   useEffect(() => {
@@ -523,16 +488,6 @@ export default function BuiltInReports() {
     });
   }, [groupedReports, starredCategories]);
 
-  // Expand all categories
-  const expandAll = () => {
-    const allCategories = Object.keys(groupedReports);
-    setOpenCategories(new Set(allCategories));
-  };
-
-  // Collapse all categories
-  const collapseAll = () => {
-    setOpenCategories(new Set());
-  };
 
   return (
     <div className="p-8 lg:p-12 min-h-full max-w-6xl">
@@ -618,27 +573,6 @@ export default function BuiltInReports() {
           </div>
         </div>
 
-        {/* Expand/Collapse All Buttons */}
-        <div className="flex gap-2">
-          <button
-            onClick={expandAll}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-workstream-blue bg-workstream-blue/10 hover:bg-workstream-blue/20 rounded-lg transition-colors"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-            </svg>
-            Expand All
-          </button>
-          <button
-            onClick={collapseAll}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-            Collapse All
-          </button>
-        </div>
       </div>
 
       {/* Starred Reports Quick Access */}
@@ -713,8 +647,6 @@ export default function BuiltInReports() {
             onToggleStar={() => toggleCategoryStar(category)}
             starredReports={starredReports}
             onToggleReportStar={toggleReportStar}
-            isOpen={openCategories.has(category)}
-            onToggle={() => toggleCategory(category)}
           />
         ))}
       </div>
