@@ -180,6 +180,11 @@ function ReportRow({
             <h3 className="text-sm font-semibold text-gray-900 leading-none">
               <HighlightedText text={report.title} searchTerms={matchedTerms} />
             </h3>
+            {/* Category Badge */}
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-gray-100 text-gray-600">
+              {categoryIcons[report.category]}
+              <span>{report.category}</span>
+            </span>
             {/* Pin Toggle */}
             <button
               onClick={onTogglePin}
