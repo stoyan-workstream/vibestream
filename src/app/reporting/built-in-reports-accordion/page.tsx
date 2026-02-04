@@ -417,21 +417,6 @@ export default function BuiltInReports() {
                             <HighlightedText text={report.description} searchTerms={matchedTerms} />
                           </p>
                           
-                          {/* Show matched synonym terms if any */}
-                          {searchQuery && matchedTerms.length > 0 && matchedTerms.some(term => term !== searchQuery.toLowerCase()) && (
-                            <div className="flex items-center gap-1 mb-3">
-                              <span className="text-xs text-gray-400">Matched:</span>
-                              {matchedTerms.filter(term => term !== searchQuery.toLowerCase()).slice(0, 3).map((term, idx) => (
-                                <span
-                                  key={idx}
-                                  className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200"
-                                >
-                                  {term}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-                          
                           {/* Action Badges */}
                           <div className="flex items-center gap-2 flex-wrap">
                             {report.tabNames.map((tab) => (
