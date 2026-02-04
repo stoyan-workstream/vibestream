@@ -349,21 +349,15 @@ export default function BuiltInReports() {
       </div>
 
       {/* Stats Summary */}
-      <div className="flex gap-8 mb-8 text-sm">
+      <div className="flex gap-8 mb-8 text-sm text-gray-500">
         <div>
-          <span className="text-gray-400">Total reports</span>
-          <span className="ml-2 font-medium text-gray-900">{reports.length}</span>
+          <span>Total reports</span>
+          <span className="ml-2 font-semibold text-gray-900">{reports.length}</span>
         </div>
         <div>
-          <span className="text-gray-400">Categories</span>
-          <span className="ml-2 font-medium text-gray-900">{categories.length}</span>
+          <span>Categories</span>
+          <span className="ml-2 font-semibold text-gray-900">{categories.length}</span>
         </div>
-        {searchQuery && (
-          <div className="animate-fade-in">
-            <span className="text-gray-400">Showing</span>
-            <span className="ml-2 font-medium text-gray-900">{filteredReports.length}</span>
-          </div>
-        )}
       </div>
 
       {/* Search and Filter Bar */}
