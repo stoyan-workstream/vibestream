@@ -293,28 +293,36 @@ export default function BuiltInReports() {
     });
   }, [searchQuery, selectedCategory]);
 
+  // Separate pinned and unpinned reports
+  const { pinnedReportsList, unpinnedReports } = useMemo(() => {
+    const pinned: Report[] = [];
+    const unpinned: Report[] = [];
+    
+    filteredReports.forEach((report) => {
+      if (pinnedReports.has(report.title)) {
+        pinned.push(report);
+      } else {
+        unpinned.push(report);
+      }
+    });
+    
+    // Sort pinned reports alphabetically
+    pinned.sort((a, b) => a.title.localeCompare(b.title));
+    
+    return { pinnedReportsList: pinned, unpinnedReports: unpinned };
+  }, [filteredReports, pinnedReports]);
+
+  // Group unpinned reports by category
   const groupedReports = useMemo(() => {
     const grouped: Record<string, Report[]> = {};
-    filteredReports.forEach((report) => {
+    unpinnedReports.forEach((report) => {
       if (!grouped[report.category]) {
         grouped[report.category] = [];
       }
       grouped[report.category].push(report);
     });
-    
-    // Sort reports within each category: pinned first, then alphabetically
-    Object.keys(grouped).forEach((category) => {
-      grouped[category].sort((a, b) => {
-        const aPin = pinnedReports.has(a.title);
-        const bPin = pinnedReports.has(b.title);
-        if (aPin && !bPin) return -1;
-        if (!aPin && bPin) return 1;
-        return a.title.localeCompare(b.title);
-      });
-    });
-    
     return grouped;
-  }, [filteredReports, pinnedReports]);
+  }, [unpinnedReports]);
 
   // Get all categories
   const categories = useMemo(() => {
@@ -413,10 +421,81 @@ export default function BuiltInReports() {
         </div>
       </div>
 
-      {/* Reports List - Grouped by Category */}
+      {/* Reports List */}
       <div className="space-y-10">
+        {/* Pinned Reports Section */}
+        {pinnedReportsList.length > 0 && (
+          <div className="space-y-3">
+            {/* Pinned Header */}
+            <div className="flex items-center gap-3 px-2">
+              <Pin className="w-4 h-4 text-workstream-blue fill-current" />
+              <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                Pinned Reports
+              </h2>
+              <span className="text-xs text-gray-400">({pinnedReportsList.length})</span>
+            </div>
+
+            {/* Pinned Reports Card */}
+            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+              <div className="divide-y divide-gray-100">
+                {pinnedReportsList.map((report) => {
+                  const matchedTerms = getMatchedTerms(report, searchQuery);
+                  
+                  return (
+                    <div
+                      key={report.title}
+                      className="group px-6 py-5 hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="text-base font-semibold text-gray-900 leading-none">
+                              <HighlightedText text={report.title} searchTerms={matchedTerms} />
+                            </h3>
+                            <button
+                              onClick={() => toggleReportPin(report.title)}
+                              className="flex-shrink-0 transition-colors mt-0.5 text-workstream-blue"
+                              title="Unpin report"
+                            >
+                              <Pin className="w-4 h-4 fill-current" />
+                            </button>
+                          </div>
+                          <p className="text-xs text-gray-500 mb-3">
+                            <HighlightedText text={report.description} searchTerms={matchedTerms} />
+                          </p>
+                          
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {report.tabNames.map((tab) => (
+                              <Link
+                                key={tab}
+                                href={`/reporting/built-in-reports/${createReportSlug(report.title, tab)}`}
+                                className="group inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-workstream-blue bg-workstream-blue/10 hover:bg-workstream-blue hover:text-white rounded-lg transition-all border border-workstream-blue/20 hover:border-workstream-blue hover:shadow-md"
+                              >
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                </svg>
+                                <span>{tab}</span>
+                                <svg className="w-3 h-3 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                </svg>
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Category Sections */}
         {sortedCategories.map((category) => {
           const categoryReports = groupedReports[category];
+          if (!categoryReports || categoryReports.length === 0) return null;
+          
           const isCategoryPinned = pinnedCategories.has(category);
 
           return (
@@ -445,7 +524,6 @@ export default function BuiltInReports() {
               <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
                 <div className="divide-y divide-gray-100">
                 {categoryReports.map((report) => {
-                  const isPinned = pinnedReports.has(report.title);
                   const matchedTerms = getMatchedTerms(report, searchQuery);
                   
                   return (
@@ -462,12 +540,10 @@ export default function BuiltInReports() {
                             {/* Pin Toggle */}
                             <button
                               onClick={() => toggleReportPin(report.title)}
-                              className={`flex-shrink-0 transition-colors mt-0.5 ${
-                                isPinned ? "text-workstream-blue" : "text-gray-300 hover:text-workstream-blue"
-                              }`}
-                              title={isPinned ? "Unpin report" : "Pin report"}
+                              className="flex-shrink-0 transition-colors mt-0.5 text-gray-300 hover:text-workstream-blue"
+                              title="Pin report"
                             >
-                              <Pin className={`w-4 h-4 ${isPinned ? "fill-current" : ""}`} />
+                              <Pin className="w-4 h-4" />
                             </button>
                           </div>
                           <p className="text-xs text-gray-500 mb-3">
