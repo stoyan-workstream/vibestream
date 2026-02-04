@@ -409,7 +409,7 @@ export default function BuiltInReports() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search reports... (try 'worker demo' or 'payroll')"
+                placeholder="Search in plain English... (e.g., 'employee info', 'pay history', 'time off')"
                 className="w-full pl-11 pr-28 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-workstream-blue focus:border-transparent transition-all"
               />
               <div className="absolute inset-y-0 right-0 pr-3 flex items-center gap-2">
@@ -446,6 +446,13 @@ export default function BuiltInReports() {
                 <ChevronDown className="w-4 h-4 text-gray-400" />
               </div>
             </div>
+          </div>
+          
+          {/* Search Help Text */}
+          <div className="px-8 py-2 bg-blue-50 border-b border-blue-100">
+            <p className="text-xs text-blue-700">
+              💡 <strong>Tip:</strong> Use your own words! Search "worker" to find employee reports, "pay" for payroll, or "time off" for PTO reports.
+            </p>
           </div>
         </div>
 

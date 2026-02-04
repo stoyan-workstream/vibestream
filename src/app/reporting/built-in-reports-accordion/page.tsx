@@ -372,7 +372,7 @@ export default function BuiltInReports() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search reports... (try 'worker demo' or 'payroll')"
+            placeholder="Search in plain English... (e.g., 'employee info', 'pay history', 'time off')"
             className="w-full pl-11 pr-20 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
           />
           <div className="absolute inset-y-0 right-0 pr-3 flex items-center gap-2">
@@ -413,6 +413,13 @@ export default function BuiltInReports() {
             </svg>
           </div>
         </div>
+      </div>
+
+      {/* Search Help Text */}
+      <div className="px-4 py-3 bg-blue-50 rounded-lg border border-blue-100 mb-6">
+        <p className="text-xs text-blue-700">
+          💡 <strong>Tip:</strong> Use your own words! Search "worker" to find employee reports, "pay" for payroll, or "time off" for PTO reports.
+        </p>
       </div>
 
       {/* Reports List */}
