@@ -409,7 +409,7 @@ export default function BuiltInReports() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search reports..."
+                placeholder="Search reports... (try 'worker demo' or 'payroll')"
                 className="w-full pl-11 pr-28 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-workstream-blue focus:border-transparent transition-all"
               />
               <div className="absolute inset-y-0 right-0 pr-3 flex items-center gap-2">
