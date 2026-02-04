@@ -396,7 +396,7 @@ export default function BuiltInReports() {
           </div>
 
           {/* Search and Category Filter */}
-          <div className="flex gap-3">
+          <div className="flex gap-3 mb-4">
             {/* Search Input */}
             <div className="relative flex-1">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
