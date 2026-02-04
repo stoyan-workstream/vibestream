@@ -286,47 +286,16 @@ export default function BuiltInReports() {
     });
   }, [searchQuery, selectedCategory]);
 
-  // Separate pinned and unpinned reports
-  const { pinnedReportsList, unpinnedReports } = useMemo(() => {
-    const pinned: Report[] = [];
-    const unpinned: Report[] = [];
-    
-    filteredReports.forEach((report) => {
-      if (pinnedReports.has(report.title)) {
-        pinned.push(report);
-      } else {
-        unpinned.push(report);
-      }
-    });
-    
-    // Sort pinned reports alphabetically
-    pinned.sort((a, b) => a.title.localeCompare(b.title));
-    
-    return { pinnedReportsList: pinned, unpinnedReports: unpinned };
-  }, [filteredReports, pinnedReports]);
-
-  // Group unpinned reports by category
-  const groupedReports = useMemo(() => {
-    const grouped: Record<string, Report[]> = {};
-    unpinnedReports.forEach((report) => {
-      if (!grouped[report.category]) {
-        grouped[report.category] = [];
-      }
-      grouped[report.category].push(report);
-    });
-    return grouped;
-  }, [unpinnedReports]);
-
-  // Sort categories: pinned first, then alphabetically
-  const sortedCategories = useMemo(() => {
-    return Object.keys(groupedReports).sort((a, b) => {
-      const aPin = pinnedCategories.has(a);
-      const bPin = pinnedCategories.has(b);
+  // Sort all reports: pinned first, then alphabetically
+  const sortedReports = useMemo(() => {
+    return [...filteredReports].sort((a, b) => {
+      const aPin = pinnedReports.has(a.title);
+      const bPin = pinnedReports.has(b.title);
       if (aPin && !bPin) return -1;
       if (!aPin && bPin) return 1;
-      return a.localeCompare(b);
+      return a.title.localeCompare(b.title);
     });
-  }, [groupedReports, pinnedCategories]);
+  }, [filteredReports, pinnedReports]);
 
   const categories = useMemo(() => {
     const allCategories = Array.from(new Set(reports.map((r) => r.category)));
@@ -334,186 +303,115 @@ export default function BuiltInReports() {
   }, []);
 
   return (
-    <div className="p-8 lg:p-12 min-h-full w-full">
-      {/* Page Header */}
-      <div className="mb-10">
-        <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">Built-in Reports (Flat View)</h1>
-        <p className="mt-1 text-gray-500">Browse all reports in a single list</p>
-      </div>
-
-      {/* Stats Summary */}
-      <div className="flex gap-8 mb-8 text-sm">
-        <div>
-          <span className="text-gray-500">Total Reports:</span>
-          <span className="ml-2 font-semibold text-gray-900">{filteredReports.length}</span>
-        </div>
-        {pinnedReportsList.length > 0 && (
-          <div>
-            <span className="text-gray-500">Pinned:</span>
-            <span className="ml-2 font-semibold text-workstream-blue">{pinnedReportsList.length}</span>
+    <div className="h-full flex flex-col">
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="flex-shrink-0 bg-white border-b border-gray-200 px-8 py-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">
+                All Built-in Reports
+              </h1>
+              <p className="mt-1 text-sm text-gray-500">
+                {sortedReports.length} {sortedReports.length === 1 ? "report" : "reports"}
+              </p>
+            </div>
           </div>
-        )}
-      </div>
 
-      {/* Search and Filter Bar */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-10">
-        {/* Search Input */}
-        <div className="relative flex-1">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-          <input
-            id="report-search"
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search reports..."
-            className="w-full pl-11 pr-20 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
-          />
-          <div className="absolute inset-y-0 right-0 pr-3 flex items-center gap-2">
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-                aria-label="Clear search"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          {/* Search and Category Filter */}
+          <div className="flex gap-3">
+            {/* Search Input */}
+            <div className="relative flex-1">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
-              </button>
-            )}
-            <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs text-gray-400 bg-gray-100 rounded border border-gray-200 pointer-events-none">
-              <span className="text-xs">⌘</span>K
-            </kbd>
-          </div>
-        </div>
-
-        {/* Category Filter */}
-        <div className="relative">
-          <select
-            value={selectedCategory || ""}
-            onChange={(e) => setSelectedCategory(e.target.value || null)}
-            className="appearance-none pl-4 pr-10 py-3 bg-white border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent cursor-pointer transition-all"
-          >
-            <option value="">All Categories</option>
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-400">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </div>
-        </div>
-      </div>
-
-      {/* Reports List */}
-      <div className="space-y-10">
-        {/* Pinned Reports Section */}
-        {pinnedReportsList.length > 0 && (
-          <div className="space-y-3">
-            {/* Pinned Header */}
-            <div className="flex items-center gap-3 px-2">
-              <Pin className="w-4 h-4 text-workstream-blue fill-current" />
-              <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-                Pinned Reports
-              </h2>
-              <span className="text-xs text-gray-400">({pinnedReportsList.length})</span>
+              </div>
+              <input
+                id="report-search"
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search reports..."
+                className="w-full pl-11 pr-28 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-workstream-blue focus:border-transparent transition-all"
+              />
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center gap-2">
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
+                    title="Clear search"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+                <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs text-gray-400 bg-gray-100 rounded border border-gray-200 pointer-events-none">
+                  <span className="text-xs">⌘</span>K
+                </kbd>
+              </div>
             </div>
 
-            {/* Pinned Reports Card */}
-            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
-              <div className="divide-y divide-gray-100">
-                {pinnedReportsList.map((report) => (
+            {/* Category Dropdown */}
+            <div className="relative">
+              <select
+                value={selectedCategory || ""}
+                onChange={(e) => setSelectedCategory(e.target.value || null)}
+                className="appearance-none pl-4 pr-10 py-3 bg-white border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-workstream-blue focus:border-transparent cursor-pointer transition-all"
+              >
+                <option value="">All Categories</option>
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                <ChevronDown className="w-4 h-4 text-gray-400" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Reports List - Single Flat List */}
+        <div className="flex-1 overflow-y-auto bg-gray-50">
+          {sortedReports.length > 0 ? (
+            <div className="divide-y divide-gray-100">
+              {sortedReports.map((report) => {
+                const isPinned = pinnedReports.has(report.title);
+                return (
                   <ReportRow
                     key={report.title}
                     report={report}
-                    isPinned={true}
+                    isPinned={isPinned}
                     onTogglePin={() => toggleReportPin(report.title)}
                     searchQuery={searchQuery}
                   />
-                ))}
-              </div>
+                );
+              })}
             </div>
-          </div>
-        )}
-
-        {/* Category Sections */}
-        {sortedCategories.map((category) => {
-          const categoryReports = groupedReports[category];
-          if (!categoryReports || categoryReports.length === 0) return null;
-          
-          const isCategoryPinned = pinnedCategories.has(category);
-
-          return (
-            <div key={category} className="space-y-3">
-              {/* Category Header - Outside Card */}
-              <div className="flex items-center gap-3 px-2">
-                <span className="text-workstream-blue">
-                  {categoryIcons[category]}
-                </span>
-                <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-                  {category}
-                </h2>
-                <span className="text-xs text-gray-400">({categoryReports.length})</span>
-                <button
-                  onClick={() => toggleCategoryPin(category)}
-                  className={`ml-auto flex-shrink-0 transition-colors ${
-                    isCategoryPinned ? "text-workstream-blue" : "text-gray-300 hover:text-workstream-blue"
-                  }`}
-                  title={isCategoryPinned ? "Unpin category" : "Pin category"}
-                >
-                  <Pin className={`w-4 h-4 ${isCategoryPinned ? "fill-current" : ""}`} />
-                </button>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full text-center px-4">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
               </div>
-
-              {/* Reports Card */}
-              <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
-                <div className="divide-y divide-gray-100">
-                  {categoryReports.map((report) => (
-                    <ReportRow
-                      key={report.title}
-                      report={report}
-                      isPinned={false}
-                      onTogglePin={() => toggleReportPin(report.title)}
-                      searchQuery={searchQuery}
-                    />
-                  ))}
-                </div>
-              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No reports found</h3>
+              <p className="mt-1 text-sm text-gray-500">Try adjusting your search or filter</p>
+              <button
+                onClick={() => {
+                  setSearchQuery("");
+                  setSelectedCategory(null);
+                }}
+                className="mt-4 text-sm text-workstream-blue hover:text-workstream-blue-dark font-medium transition-colors"
+              >
+                Clear filters
+              </button>
             </div>
-          );
-        })}
-      </div>
-
-      {/* Empty State */}
-      {filteredReports.length === 0 && (
-        <div className="mt-16 text-center">
-          <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto text-gray-400">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-          <h3 className="mt-4 text-base font-medium text-gray-900">No reports found</h3>
-          <p className="mt-1 text-sm text-gray-500">
-            Try adjusting your search or filter
-          </p>
-          <button
-            onClick={() => {
-              setSearchQuery("");
-              setSelectedCategory(null);
-            }}
-            className="mt-4 text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors"
-          >
-            Clear filters
-          </button>
+          )}
         </div>
-      )}
+      </main>
     </div>
   );
 }
