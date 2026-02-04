@@ -177,13 +177,13 @@ function ReportRow({
         {/* Report Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="text-sm font-semibold text-gray-900">
+            <h3 className="text-sm font-semibold text-gray-900 leading-none">
               <HighlightedText text={report.title} searchTerms={matchedTerms} />
             </h3>
             {/* Pin Toggle */}
             <button
               onClick={onTogglePin}
-              className={`flex-shrink-0 transition-colors ${
+              className={`flex-shrink-0 transition-colors mt-0.5 ${
                 isPinned ? "text-workstream-blue" : "text-gray-300 hover:text-workstream-blue"
               }`}
               title={isPinned ? "Unpin report" : "Pin report"}
