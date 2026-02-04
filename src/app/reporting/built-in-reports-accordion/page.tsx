@@ -230,12 +230,17 @@ export default function BuiltInReports() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [pinnedReports, setPinnedReports] = useState<Set<string>>(new Set());
+  const [pinnedCategories, setPinnedCategories] = useState<Set<string>>(new Set());
 
   // Load pinned items from localStorage
   useEffect(() => {
     const savedReports = localStorage.getItem("pinnedReports");
+    const savedCategories = localStorage.getItem("pinnedCategories");
     if (savedReports) {
       setPinnedReports(new Set(JSON.parse(savedReports)));
+    }
+    if (savedCategories) {
+      setPinnedCategories(new Set(JSON.parse(savedCategories)));
     }
   }, []);
 
@@ -249,6 +254,20 @@ export default function BuiltInReports() {
         newSet.add(reportTitle);
       }
       localStorage.setItem("pinnedReports", JSON.stringify(Array.from(newSet)));
+      return newSet;
+    });
+  };
+
+  // Toggle pin for categories
+  const toggleCategoryPin = (category: string) => {
+    setPinnedCategories((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(category)) {
+        newSet.delete(category);
+      } else {
+        newSet.add(category);
+      }
+      localStorage.setItem("pinnedCategories", JSON.stringify(Array.from(newSet)));
       return newSet;
     });
   };
@@ -290,10 +309,16 @@ export default function BuiltInReports() {
     return Array.from(new Set(reports.map((r) => r.category))).sort();
   }, []);
 
-  // Sort categories alphabetically
+  // Sort categories: pinned first, then alphabetically
   const sortedCategories = useMemo(() => {
-    return Object.keys(groupedReports).sort((a, b) => a.localeCompare(b));
-  }, [groupedReports]);
+    return Object.keys(groupedReports).sort((a, b) => {
+      const aPin = pinnedCategories.has(a);
+      const bPin = pinnedCategories.has(b);
+      if (aPin && !bPin) return -1;
+      if (!aPin && bPin) return 1;
+      return a.localeCompare(b);
+    });
+  }, [groupedReports, pinnedCategories]);
 
   return (
     <div className="p-8 lg:p-12 min-h-full w-full">
@@ -377,27 +402,36 @@ export default function BuiltInReports() {
       </div>
 
       {/* Reports List - Grouped by Category */}
-      <div className="space-y-4">
+      <div className="space-y-6">
         {sortedCategories.map((category) => {
           const categoryReports = groupedReports[category];
+          const isCategoryPinned = pinnedCategories.has(category);
 
           return (
-            <div key={category} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-              {/* Category Header */}
-              <div className="bg-gray-50 px-6 py-4 border-b-2 border-gray-200">
-                <div className="flex items-center gap-3">
-                  <span className="text-workstream-blue">
-                    {categoryIcons[category]}
-                  </span>
-                  <h2 className="text-base font-bold text-gray-900 uppercase tracking-wide">
-                    {category}
-                  </h2>
-                  <span className="text-sm text-gray-500 font-medium">({categoryReports.length} reports)</span>
-                </div>
+            <div key={category} className="space-y-3">
+              {/* Category Header - Outside Card */}
+              <div className="flex items-center gap-3 px-2">
+                <span className="text-workstream-blue">
+                  {categoryIcons[category]}
+                </span>
+                <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                  {category}
+                </h2>
+                <span className="text-xs text-gray-400">({categoryReports.length})</span>
+                <button
+                  onClick={() => toggleCategoryPin(category)}
+                  className={`ml-auto flex-shrink-0 transition-colors ${
+                    isCategoryPinned ? "text-workstream-blue" : "text-gray-300 hover:text-workstream-blue"
+                  }`}
+                  title={isCategoryPinned ? "Unpin category" : "Pin category"}
+                >
+                  <Pin className={`w-4 h-4 ${isCategoryPinned ? "fill-current" : ""}`} />
+                </button>
               </div>
 
-              {/* Reports */}
-              <div className="divide-y divide-gray-100">
+              {/* Reports Card */}
+              <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+                <div className="divide-y divide-gray-100">
                 {categoryReports.map((report) => {
                   const isPinned = pinnedReports.has(report.title);
                   const matchedTerms = getMatchedTerms(report, searchQuery);
@@ -451,6 +485,7 @@ export default function BuiltInReports() {
                     </div>
                   );
                 })}
+                </div>
               </div>
             </div>
           );
