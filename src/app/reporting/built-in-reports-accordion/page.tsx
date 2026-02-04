@@ -3,6 +3,8 @@
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { Pin, Award, DollarSign, FileCheck, Users, UserPlus, Wallet, Calculator, Clock, BarChart3 } from "lucide-react";
+import { getRelatedTerms, matchesSearch, getMatchedTerms } from "@/utils/semanticSearch";
+import { HighlightedText } from "@/components/HighlightedText";
 
 // Helper to create URL-friendly slugs
 function createReportSlug(reportTitle: string, tabName: string): string {
@@ -251,15 +253,10 @@ export default function BuiltInReports() {
 
   const filteredReports = useMemo(() => {
     return reports.filter((report) => {
-      const matchesSearch =
-        searchQuery === "" ||
-        report.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        report.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        report.tabNames.some((tab) => tab.toLowerCase().includes(searchQuery.toLowerCase()));
-
+      const matchesSearchQuery = matchesSearch(report, searchQuery);
       const matchesCategory = selectedCategory === null || report.category === selectedCategory;
 
-      return matchesSearch && matchesCategory;
+      return matchesSearchQuery && matchesCategory;
     });
   }, [searchQuery, selectedCategory]);
 
@@ -378,6 +375,8 @@ export default function BuiltInReports() {
               <div className="divide-y divide-gray-100">
                 {categoryReports.map((report) => {
                   const isPinned = pinnedReports.has(report.title);
+                  const matchedTerms = getMatchedTerms(report, searchQuery);
+                  
                   return (
                     <div
                       key={report.title}
@@ -386,7 +385,9 @@ export default function BuiltInReports() {
                       <div className="flex items-start gap-4">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <h3 className="text-sm font-semibold text-gray-900">{report.title}</h3>
+                            <h3 className="text-sm font-semibold text-gray-900">
+                              <HighlightedText text={report.title} searchTerms={matchedTerms} />
+                            </h3>
                             {/* Pin Toggle */}
                             <button
                               onClick={() => toggleReportPin(report.title)}
@@ -398,7 +399,24 @@ export default function BuiltInReports() {
                               <Pin className={`w-4 h-4 ${isPinned ? "fill-current" : ""}`} />
                             </button>
                           </div>
-                          <p className="text-xs text-gray-500 mb-3">{report.description}</p>
+                          <p className="text-xs text-gray-500 mb-3">
+                            <HighlightedText text={report.description} searchTerms={matchedTerms} />
+                          </p>
+                          
+                          {/* Show matched synonym terms if any */}
+                          {searchQuery && matchedTerms.length > 0 && matchedTerms.some(term => term !== searchQuery.toLowerCase()) && (
+                            <div className="flex items-center gap-1 mb-3">
+                              <span className="text-xs text-gray-400">Matched:</span>
+                              {matchedTerms.filter(term => term !== searchQuery.toLowerCase()).slice(0, 3).map((term, idx) => (
+                                <span
+                                  key={idx}
+                                  className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200"
+                                >
+                                  {term}
+                                </span>
+                              ))}
+                            </div>
+                          )}
                           
                           {/* Action Badges */}
                           <div className="flex items-center gap-2 flex-wrap">
