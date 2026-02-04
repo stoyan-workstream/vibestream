@@ -301,8 +301,20 @@ export default function BuiltInReports() {
       }
       grouped[report.category].push(report);
     });
+    
+    // Sort reports within each category: pinned first, then alphabetically
+    Object.keys(grouped).forEach((category) => {
+      grouped[category].sort((a, b) => {
+        const aPin = pinnedReports.has(a.title);
+        const bPin = pinnedReports.has(b.title);
+        if (aPin && !bPin) return -1;
+        if (!aPin && bPin) return 1;
+        return a.title.localeCompare(b.title);
+      });
+    });
+    
     return grouped;
-  }, [filteredReports]);
+  }, [filteredReports, pinnedReports]);
 
   // Get all categories
   const categories = useMemo(() => {
