@@ -443,7 +443,7 @@ export default function BuiltInReports() {
                       <div className="flex items-start gap-4">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <h3 className="text-base font-semibold text-gray-900 leading-none">
+                            <h3 className="text-sm font-semibold text-gray-900 leading-none">
                               <HighlightedText text={report.title} searchTerms={matchedTerms} />
                             </h3>
                             <button
@@ -499,7 +499,7 @@ export default function BuiltInReports() {
                 <span className="text-workstream-blue">
                   {categoryIcons[category]}
                 </span>
-                <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                <h2 className="text-base font-semibold text-gray-700 uppercase tracking-wide">
                   {category}
                 </h2>
                 <span className="text-xs text-gray-400">({categoryReports.length})</span>
@@ -528,7 +528,7 @@ export default function BuiltInReports() {
                       <div className="flex items-start gap-4">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <h3 className="text-base font-semibold text-gray-900 leading-none">
+                            <h3 className="text-sm font-semibold text-gray-900 leading-none">
                               <HighlightedText text={report.title} searchTerms={matchedTerms} />
                             </h3>
                             {/* Pin Toggle */}
