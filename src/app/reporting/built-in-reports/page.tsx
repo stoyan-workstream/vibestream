@@ -449,7 +449,7 @@ export default function BuiltInReports() {
           </div>
           
           {/* Search Help Text */}
-          <div className="px-8 py-2 bg-blue-50 border-b border-blue-100">
+          <div className="px-8 py-2 mt-4 bg-blue-50 border-b border-blue-100">
             <p className="text-xs text-blue-700">
               💡 <strong>Tip:</strong> Use your own words! Search "worker" to find employee reports, "pay" for payroll, or "time off" for PTO reports.
             </p>
