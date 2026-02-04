@@ -447,13 +447,13 @@ export default function BuiltInReports() {
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Search Help Text */}
-        <div className="px-8 py-3 mx-8 bg-blue-50 rounded-lg border border-blue-100 mb-6">
-          <p className="text-xs text-blue-700">
-            💡 <strong>Tip:</strong> Use your own words! Search "worker" to find employee reports, "pay" for payroll, or "time off" for PTO reports.
-          </p>
+          {/* Search Help Text */}
+          <div className="px-4 py-3 bg-blue-50 rounded-lg border border-blue-100 mt-4">
+            <p className="text-xs text-blue-700">
+              💡 <strong>Tip:</strong> Use your own words! Search "worker" to find employee reports, "pay" for payroll, or "time off" for PTO reports.
+            </p>
+          </div>
         </div>
 
         {/* Reports List - Single Flat List */}
