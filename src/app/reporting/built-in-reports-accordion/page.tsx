@@ -402,7 +402,7 @@ export default function BuiltInReports() {
       </div>
 
       {/* Reports List - Grouped by Category */}
-      <div className="space-y-6">
+      <div className="space-y-8">
         {sortedCategories.map((category) => {
           const categoryReports = groupedReports[category];
           const isCategoryPinned = pinnedCategories.has(category);
