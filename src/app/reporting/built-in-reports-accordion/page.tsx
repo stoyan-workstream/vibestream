@@ -30,6 +30,20 @@ const reports: Report[] = [
     category: "Benefits",
   },
   {
+    title: "Applicant Report",
+    tabCount: 3,
+    tabNames: ["Table", "By Source", "By Location"],
+    description: "See your applicants and filter by applicant details including application status, source, and location.",
+    category: "Hiring",
+  },
+  {
+    title: "Hiring Report",
+    tabCount: 5,
+    tabNames: ["Daily", "Weekly", "Monthly", "By Location", "By Brand"],
+    description: "See hiring performance and applicant engagement during specific time frames across your locations, positions and sources.",
+    category: "Hiring",
+  },
+  {
     title: "All Workstream Usage Report",
     tabCount: 1,
     tabNames: ["Employees"],
@@ -357,17 +371,17 @@ export default function BuiltInReports() {
           const categoryReports = groupedReports[category];
 
           return (
-            <div key={category} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <div key={category} className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
               {/* Category Header */}
-              <div className="bg-gray-50 px-6 py-3 border-b border-gray-200">
+              <div className="bg-gradient-to-r from-workstream-blue to-blue-600 px-6 py-4 border-b-2 border-workstream-blue">
                 <div className="flex items-center gap-3">
-                  <span className="text-workstream-blue">
+                  <span className="text-white">
                     {categoryIcons[category]}
                   </span>
-                  <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">
+                  <h2 className="text-base font-bold text-white uppercase tracking-wide">
                     {category}
                   </h2>
-                  <span className="text-sm text-gray-500">({categoryReports.length} reports)</span>
+                  <span className="text-sm text-blue-100 font-medium">({categoryReports.length} reports)</span>
                 </div>
               </div>
 
@@ -385,7 +399,7 @@ export default function BuiltInReports() {
                       <div className="flex items-start gap-4">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <h3 className="text-sm font-semibold text-gray-900">
+                            <h3 className="text-base font-semibold text-gray-900">
                               <HighlightedText text={report.title} searchTerms={matchedTerms} />
                             </h3>
                             {/* Pin Toggle */}
