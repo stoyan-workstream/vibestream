@@ -336,8 +336,19 @@ export default function BuiltInReports() {
             placeholder="Search reports..."
             className="w-full pl-11 pr-20 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
           />
-          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-            <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs text-gray-400 bg-gray-100 rounded border border-gray-200">
+          <div className="absolute inset-y-0 right-0 pr-3 flex items-center gap-2">
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+                aria-label="Clear search"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+            <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs text-gray-400 bg-gray-100 rounded border border-gray-200 pointer-events-none">
               <span className="text-xs">⌘</span>K
             </kbd>
           </div>
@@ -371,17 +382,17 @@ export default function BuiltInReports() {
           const categoryReports = groupedReports[category];
 
           return (
-            <div key={category} className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+            <div key={category} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
               {/* Category Header */}
-              <div className="bg-gradient-to-r from-workstream-blue to-blue-600 px-6 py-4 border-b-2 border-workstream-blue">
+              <div className="bg-gray-50 px-6 py-4 border-b-2 border-gray-200">
                 <div className="flex items-center gap-3">
-                  <span className="text-white">
+                  <span className="text-workstream-blue">
                     {categoryIcons[category]}
                   </span>
-                  <h2 className="text-base font-bold text-white uppercase tracking-wide">
+                  <h2 className="text-base font-bold text-gray-900 uppercase tracking-wide">
                     {category}
                   </h2>
-                  <span className="text-sm text-blue-100 font-medium">({categoryReports.length} reports)</span>
+                  <span className="text-sm text-gray-500 font-medium">({categoryReports.length} reports)</span>
                 </div>
               </div>
 
