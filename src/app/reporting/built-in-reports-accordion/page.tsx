@@ -360,6 +360,19 @@ export default function BuiltInReports() {
         </div>
       </div>
 
+      {/* View Tabs */}
+      <div className="flex items-center gap-3 mb-6">
+        <span className="text-sm font-medium text-gray-700">Views:</span>
+        <div className="flex gap-2">
+          <Link
+            href="/reporting/built-in-reports-accordion"
+            className="px-4 py-2 rounded-lg text-sm font-medium bg-workstream-blue text-white"
+          >
+            Grouped
+          </Link>
+        </div>
+      </div>
+
       {/* Search and Filter Bar */}
       <div className="flex flex-col sm:flex-row gap-3 mb-4">
         {/* Search Input */}
@@ -509,16 +522,16 @@ export default function BuiltInReports() {
                 <h2 className="text-base font-semibold text-gray-700 uppercase tracking-wide">
                   {category}
                 </h2>
-                <span className="text-xs text-gray-400">({categoryReports.length})</span>
                 <button
                   onClick={() => toggleCategoryPin(category)}
-                  className={`ml-auto flex-shrink-0 transition-colors ${
+                  className={`flex-shrink-0 transition-colors ${
                     isCategoryPinned ? "text-workstream-blue" : "text-gray-300 hover:text-workstream-blue"
                   }`}
                   title={isCategoryPinned ? "Unpin category" : "Pin category"}
                 >
                   <Pin className={`w-4 h-4 ${isCategoryPinned ? "fill-current" : ""}`} />
                 </button>
+                <span className="text-xs text-gray-400">({categoryReports.length})</span>
               </div>
 
               {/* Reports Card */}
