@@ -201,14 +201,14 @@ export default function Sidebar() {
           isActive={pathname === '/scheduling'} 
           isCollapsed={isCollapsed}
         />
-        <NavItem 
+        {/* <NavItem 
           href="/compliance" 
           icon={<ComplianceIcon />} 
           label="Compliance" 
           isActive={pathname === '/compliance'} 
           isCollapsed={isCollapsed}
           badge={17}
-        />
+        /> */}
         
         {/* Reporting with submenu */}
         <div>
