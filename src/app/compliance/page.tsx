@@ -962,14 +962,23 @@ const IssueCard = ({ issue, onResolve }: IssueCardProps) => {
   const [expanded, setExpanded] = useState(false);
   const [showResolvePopup, setShowResolvePopup] = useState(false);
   const [showReminderPopup, setShowReminderPopup] = useState(false);
+  const [justResolved, setJustResolved] = useState(false);
+  const [fadeOut, setFadeOut] = useState(false);
   const [comment, setComment] = useState('');
   const [reminderDate, setReminderDate] = useState('');
   const [reminderTime, setReminderTime] = useState('09:00');
 
   const handleResolve = () => {
-    onResolve(issue.id, comment);
     setShowResolvePopup(false);
-    setComment('');
+    setJustResolved(true);
+    // Show the green "Resolved" button briefly, then fade out and resolve
+    setTimeout(() => {
+      setFadeOut(true);
+      setTimeout(() => {
+        onResolve(issue.id, comment);
+        setComment('');
+      }, 400);
+    }, 1000);
   };
 
   const handleSetReminder = () => {
@@ -980,8 +989,10 @@ const IssueCard = ({ issue, onResolve }: IssueCardProps) => {
   };
 
   return (
-    <div className={`bg-white rounded-xl border border-gray-200 p-4 transition-all ${
-      issue.status === "resolved" ? "opacity-80" : ""
+    <div className={`bg-white rounded-xl border p-4 transition-all duration-400 ${
+      fadeOut ? "opacity-0 scale-[0.98] -translate-y-1" : "opacity-100"
+    } ${
+      justResolved ? "border-green-300 bg-green-50/30" : "border-gray-200"
     }`}>
       {/* Main Row */}
       <div className="flex items-center gap-4">
@@ -1059,7 +1070,7 @@ const IssueCard = ({ issue, onResolve }: IssueCardProps) => {
           )}
         </div>
         <div className="flex items-center gap-2">
-          {issue.status === "open" && (
+          {issue.status === "open" && !justResolved && (
             <>
               <div className="relative">
                 <button
@@ -1151,6 +1162,14 @@ const IssueCard = ({ issue, onResolve }: IssueCardProps) => {
                 )}
               </div>
             </>
+          )}
+          {justResolved && (
+            <span className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-green-600 text-white rounded-lg animate-in">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Resolved
+            </span>
           )}
           {issue.status === "in_review" && (
             <>
@@ -1799,12 +1818,12 @@ export default function Compliance() {
 
       {/* Paywall View */}
       {!isUnlocked && (
-        <div className="space-y-8">
+        <div className="space-y-6">
           {/* Stats Preview */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-white rounded-xl border border-gray-200 p-6">
               <div className="flex items-start justify-between">
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Compliance Issues</h3>
+                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Potential Compliance Issues</h3>
                 <div className="w-11 h-11 rounded-full border border-gray-200 flex items-center justify-center text-gray-400">
                   <ShieldAlert className="w-5 h-5" />
                 </div>
@@ -1823,33 +1842,92 @@ export default function Compliance() {
             </div>
           </div>
 
-          {/* CTA Card */}
-          <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-10 text-center relative overflow-hidden">
-            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTM2IDM0djItSDI0di0yaDEyek0zNiAyNHYySDI0di0yaDEyeiIvPjwvZz48L2c+PC9zdmc+')] opacity-50" />
-            <div className="relative">
-              <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-6">
-                <ShieldAlert className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-2xl font-semibold text-white mb-3">Unlock Compliance Shield</h2>
-              <p className="text-gray-400 max-w-lg mx-auto mb-8">
-                Get full access to compliance monitoring, issue tracking, AI-powered insights, 
-                and proactive alerts to help you avoid costly fines and stay compliant.
-              </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a
-                  href="mailto:sales@company.com"
-                  className="flex items-center gap-2 px-6 py-3 bg-white text-gray-900 font-medium rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  <Mail className="w-5 h-5" />
-                  Contact Sales
-                </a>
-                <a
-                  href="tel:+1234567890"
-                  className="flex items-center gap-2 px-6 py-3 bg-white/10 text-white font-medium rounded-lg hover:bg-white/20 transition-colors"
-                >
-                  <Phone className="w-5 h-5" />
-                  Schedule a Demo
-                </a>
+          {/* Recent Issues Section Header */}
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-900">Recent Issues</h2>
+            <span className="text-sm text-gray-500">{issues.length} issues found</span>
+          </div>
+
+          {/* Blurred Issues with CTA Overlay */}
+          <div className="relative">
+            {/* Issues list with progressive blur */}
+            <div className="space-y-4 select-none pointer-events-none">
+              {issuesData.slice(0, 5).map((issue, index) => {
+                const blurAmount = index === 0 ? 0 : index === 1 ? 1 : index === 2 ? 3 : index === 3 ? 6 : 10;
+                const opacity = index === 0 ? 1 : index === 1 ? 0.9 : index === 2 ? 0.8 : index === 3 ? 0.7 : 0.6;
+                
+                return (
+                  <div 
+                    key={issue.id} 
+                    className="bg-white rounded-xl border border-gray-200 p-4 transition-all"
+                    style={{ 
+                      filter: `blur(${blurAmount}px)`,
+                      opacity,
+                    }}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-700 font-medium text-sm flex-shrink-0">
+                        {issue.worker.split(' ').map(n => n[0]).join('')}
+                      </div>
+                      <div className="min-w-[140px]">
+                        <h3 className="font-semibold text-gray-900">{issue.worker}</h3>
+                        <div className="flex items-center gap-1 text-sm text-gray-600">
+                          <LocationIcon />
+                          <span>{issue.location}</span>
+                        </div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-medium text-gray-800 truncate">{issue.ruleName}</p>
+                          <span className={`px-2 py-0.5 rounded text-xs font-medium flex-shrink-0 ${getCategoryStyle(issue.category)}`}>
+                            {issue.category}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-600 truncate">{issue.summary}</p>
+                      </div>
+                      <div className="text-right flex-shrink-0">
+                        <p className="text-xs text-gray-500">Potential Fine</p>
+                        <p className="text-lg font-semibold text-gray-900">${issue.potentialFine.toLocaleString()}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gray-100/70 to-gray-100 pointer-events-none" style={{ top: '80px' }} />
+
+            {/* CTA Overlay */}
+            <div className="absolute inset-x-0 bottom-0 top-24 flex items-center justify-center">
+              <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-8 text-center relative overflow-hidden max-w-xl mx-4 shadow-2xl">
+                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTM2IDM0djItSDI0di0yaDEyek0zNiAyNHYySDI0di0yaDEyeiIvPjwvZz48L2c+PC9zdmc+')] opacity-50" />
+                <div className="relative">
+                  <div className="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-5">
+                    <ShieldAlert className="w-7 h-7 text-white" />
+                  </div>
+                  <h2 className="text-xl font-semibold text-white mb-2">Unlock Compliance Shield</h2>
+                  <p className="text-gray-400 text-sm max-w-md mx-auto mb-6">
+                    Get full access to compliance monitoring, issue tracking, AI-powered insights, 
+                    and proactive alerts to help you avoid costly fines.
+                  </p>
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pointer-events-auto">
+                    <a
+                      href="mailto:sales@company.com"
+                      className="flex items-center gap-2 px-5 py-2.5 bg-white text-gray-900 font-medium rounded-lg hover:bg-gray-100 transition-colors text-sm"
+                    >
+                      <Mail className="w-4 h-4" />
+                      Contact Sales
+                    </a>
+                    <a
+                      href="tel:+1234567890"
+                      className="flex items-center gap-2 px-5 py-2.5 bg-white/10 text-white font-medium rounded-lg hover:bg-white/20 transition-colors text-sm"
+                    >
+                      <Phone className="w-4 h-4" />
+                      Schedule a Demo
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -1889,7 +1967,7 @@ export default function Compliance() {
           {/* Summary Stats with Category Breakdown */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <SummaryCard
-              title="Compliance Issues"
+              title="Potential Compliance Issues"
               value={complianceData.totalIssues}
               categories={complianceData.categories.map(c => ({ name: c.name, value: c.issues }))}
               icon={<ShieldAlert className="w-5 h-5" />}
