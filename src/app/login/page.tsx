@@ -41,7 +41,7 @@ function LoginForm() {
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
       <div className="flex justify-center mb-6">
-        <div className="w-12 h-12 bg-gray-900 rounded-xl flex items-center justify-center">
+        <div className="w-12 h-12 bg-workstream-blue rounded-xl flex items-center justify-center">
           <Lock className="w-6 h-6 text-white" />
         </div>
       </div>
@@ -61,7 +61,7 @@ function LoginForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
-              className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+              className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-workstream-blue focus:border-transparent"
               autoFocus
             />
             <button
@@ -88,7 +88,7 @@ function LoginForm() {
         <button
           type="submit"
           disabled={isLoading || !password}
-          className="w-full py-3 bg-gray-900 text-white rounded-xl text-sm font-medium hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="w-full py-3 bg-workstream-blue text-white rounded-xl text-sm font-medium hover:bg-workstream-blue-dark disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {isLoading ? 'Checking...' : 'Enter'}
         </button>

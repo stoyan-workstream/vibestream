@@ -144,7 +144,7 @@ export default function Home() {
         {/* Tab and Date */}
         <div className="flex items-center justify-between mt-8 border-b border-gray-200">
           <div className="flex">
-            <button className="px-1 pb-3 text-sm font-medium text-gray-900 border-b-2 border-gray-900">
+            <button className="px-1 pb-3 text-sm font-medium text-workstream-blue border-b-2 border-workstream-blue">
               My overview
             </button>
           </div>
@@ -231,7 +231,7 @@ export default function Home() {
                     {complianceStats.issues.total} issues
                   </span>
                 </div>
-                <Link href="/compliance" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                <Link href="/compliance" className="text-sm text-gray-500 hover:text-workstream-blue transition-colors">
                   View all →
                 </Link>
               </div>

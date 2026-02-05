@@ -74,7 +74,7 @@ export default function AIReporting() {
               {/* Submit Button */}
               <button
                 type="submit"
-                className="flex-shrink-0 w-10 h-10 bg-gray-900 hover:bg-gray-800 rounded-full flex items-center justify-center transition-colors"
+                className="flex-shrink-0 w-10 h-10 bg-workstream-blue hover:bg-workstream-blue-dark rounded-full flex items-center justify-center transition-colors"
               >
                 <WaveformIcon />
               </button>

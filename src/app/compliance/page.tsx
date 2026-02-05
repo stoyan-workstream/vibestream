@@ -768,7 +768,7 @@ const SummaryCard = ({ title, value, categories, showInfo, formatValue, icon, ch
                 <span className="text-sm text-gray-600 truncate">{category.name}</span>
                 <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-gray-900 rounded-full transition-all duration-500"
+                    className="h-full bg-workstream-blue rounded-full transition-all duration-500"
                     style={{ width: `${percentage}%` }}
                   />
                 </div>
@@ -900,7 +900,7 @@ const HeatmapCard = ({ title, rows, columns, data, finesData, onCellClick }: Hea
             transform: 'translate(-50%, -100%)'
           }}
         >
-          <div className="bg-gray-900 text-white rounded-lg shadow-xl p-4 min-w-[220px]">
+          <div className="bg-workstream-blue text-white rounded-lg shadow-xl p-4 min-w-[220px]">
             {/* Location & Category */}
             <div className="mb-3">
               <p className="font-medium text-white">{tooltip.location}</p>
@@ -1113,7 +1113,7 @@ const IssueCard = ({ issue, onResolve }: IssueCardProps) => {
                         <button
                           onClick={handleSetReminder}
                           disabled={!reminderDate}
-                          className="w-full py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          className="w-full py-2 bg-workstream-blue text-white text-sm font-medium rounded-lg hover:bg-workstream-blue-dark disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
                           Set Reminder
                         </button>
@@ -1125,7 +1125,7 @@ const IssueCard = ({ issue, onResolve }: IssueCardProps) => {
               <div className="relative">
                 <button
                   onClick={() => setShowResolvePopup(!showResolvePopup)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-gray-900 text-white hover:bg-gray-800 rounded-lg transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-workstream-blue text-white hover:bg-workstream-blue-dark rounded-lg transition-colors"
                 >
                   <CheckIcon />
                   Resolve
@@ -1151,7 +1151,7 @@ const IssueCard = ({ issue, onResolve }: IssueCardProps) => {
                         />
                         <button
                           onClick={handleResolve}
-                          className="w-full flex items-center justify-center gap-1.5 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors"
+                          className="w-full flex items-center justify-center gap-1.5 px-4 py-2 bg-workstream-blue text-white text-sm font-medium rounded-lg hover:bg-workstream-blue-dark transition-colors"
                         >
                           <CheckIcon />
                           Confirm Resolution
@@ -1213,7 +1213,7 @@ const IssueCard = ({ issue, onResolve }: IssueCardProps) => {
                         <button
                           onClick={handleSetReminder}
                           disabled={!reminderDate}
-                          className="w-full py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          className="w-full py-2 bg-workstream-blue text-white text-sm font-medium rounded-lg hover:bg-workstream-blue-dark disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
                           Set Reminder
                         </button>
@@ -1229,7 +1229,7 @@ const IssueCard = ({ issue, onResolve }: IssueCardProps) => {
               <div className="relative">
                 <button
                   onClick={() => setShowResolvePopup(!showResolvePopup)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-gray-900 text-white hover:bg-gray-800 rounded-lg transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-workstream-blue text-white hover:bg-workstream-blue-dark rounded-lg transition-colors"
                 >
                   <CheckIcon />
                   Resolve
@@ -1254,7 +1254,7 @@ const IssueCard = ({ issue, onResolve }: IssueCardProps) => {
                         />
                         <button
                           onClick={handleResolve}
-                          className="w-full flex items-center justify-center gap-1.5 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors"
+                          className="w-full flex items-center justify-center gap-1.5 px-4 py-2 bg-workstream-blue text-white text-sm font-medium rounded-lg hover:bg-workstream-blue-dark transition-colors"
                         >
                           <CheckIcon />
                           Confirm Resolution
@@ -1687,7 +1687,7 @@ const RuleDetailSidebar = ({ rule, onClose }: RuleDetailSidebarProps) => {
 
           {/* Actions */}
           <div className="flex gap-3">
-            <button className="flex-1 px-4 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors">
+            <button className="flex-1 px-4 py-2.5 bg-workstream-blue text-white text-sm font-medium rounded-lg hover:bg-workstream-blue-dark transition-colors">
               View Full Documentation
             </button>
             <button className="px-4 py-2.5 border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">
@@ -1956,7 +1956,7 @@ export default function Compliance() {
             >
               {tab.label}
               {activeTab === tab.id && (
-                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-workstream-blue" />
               )}
             </button>
           ))}
