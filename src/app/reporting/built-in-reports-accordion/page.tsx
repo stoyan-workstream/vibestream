@@ -293,36 +293,33 @@ export default function BuiltInReports() {
     });
   }, [searchQuery, selectedCategory]);
 
-  // Separate pinned and unpinned reports
-  const { pinnedReportsList, unpinnedReports } = useMemo(() => {
+  // Get pinned reports list
+  const pinnedReportsList = useMemo(() => {
     const pinned: Report[] = [];
-    const unpinned: Report[] = [];
     
     filteredReports.forEach((report) => {
       if (pinnedReports.has(report.title)) {
         pinned.push(report);
-      } else {
-        unpinned.push(report);
       }
     });
     
     // Sort pinned reports alphabetically
     pinned.sort((a, b) => a.title.localeCompare(b.title));
     
-    return { pinnedReportsList: pinned, unpinnedReports: unpinned };
+    return pinned;
   }, [filteredReports, pinnedReports]);
 
-  // Group unpinned reports by category
+  // Group ALL filtered reports by category (including pinned ones)
   const groupedReports = useMemo(() => {
     const grouped: Record<string, Report[]> = {};
-    unpinnedReports.forEach((report) => {
+    filteredReports.forEach((report) => {
       if (!grouped[report.category]) {
         grouped[report.category] = [];
       }
       grouped[report.category].push(report);
     });
     return grouped;
-  }, [unpinnedReports]);
+  }, [filteredReports]);
 
   // Get all categories
   const categories = useMemo(() => {
@@ -465,8 +462,8 @@ export default function BuiltInReports() {
                             <HighlightedText text={report.description} searchTerms={matchedTerms} />
                           </p>
                           
+                          <div className="text-xs font-medium text-gray-600 mb-2">Report Views</div>
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-xs font-medium text-gray-600">Views:</span>
                             {report.tabNames.map((tab) => (
                               <Link
                                 key={tab}
@@ -552,9 +549,9 @@ export default function BuiltInReports() {
                             <HighlightedText text={report.description} searchTerms={matchedTerms} />
                           </p>
                           
+                          <div className="text-xs font-medium text-gray-600 mb-2">Report Views</div>
                           {/* Action Badges */}
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-xs font-medium text-gray-600">Views:</span>
                             {report.tabNames.map((tab) => (
                               <Link
                                 key={tab}
