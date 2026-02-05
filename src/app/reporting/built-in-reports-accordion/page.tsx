@@ -360,19 +360,6 @@ export default function BuiltInReports() {
         </div>
       </div>
 
-      {/* View Tabs */}
-      <div className="flex items-center gap-3 mb-6">
-        <span className="text-sm font-medium text-gray-700">Views:</span>
-        <div className="flex gap-2">
-          <Link
-            href="/reporting/built-in-reports-accordion"
-            className="px-4 py-2 rounded-lg text-sm font-medium bg-workstream-blue text-white"
-          >
-            Grouped
-          </Link>
-        </div>
-      </div>
-
       {/* Search and Filter Bar */}
       <div className="flex flex-col sm:flex-row gap-3 mb-4">
         {/* Search Input */}
@@ -479,6 +466,7 @@ export default function BuiltInReports() {
                           </p>
                           
                           <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-xs font-medium text-gray-600">Views:</span>
                             {report.tabNames.map((tab) => (
                               <Link
                                 key={tab}
@@ -566,6 +554,7 @@ export default function BuiltInReports() {
                           
                           {/* Action Badges */}
                           <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-xs font-medium text-gray-600">Views:</span>
                             {report.tabNames.map((tab) => (
                               <Link
                                 key={tab}
