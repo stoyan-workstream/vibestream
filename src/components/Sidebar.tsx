@@ -247,10 +247,16 @@ export default function Sidebar() {
                 isActive={pathname === '/reporting/built-in-reports-accordion'}
                 isCollapsed={isCollapsed}
               />
-              <SubNavItem 
-                href="/reporting/custom-reports" 
-                label="Custom Reports" 
+              <SubNavItem
+                href="/reporting/custom-reports"
+                label="Custom Reports"
                 isActive={pathname === '/reporting/custom-reports'}
+                isCollapsed={isCollapsed}
+              />
+              <SubNavItem
+                href="/reporting/ledger-export"
+                label="Ledger Export"
+                isActive={pathname === '/reporting/ledger-export'}
                 isCollapsed={isCollapsed}
               />
             </div>
