@@ -41,6 +41,25 @@
 
 ---
 
+### 3. Ledger Export
+
+**What changed:** New page to generate General Ledger PDFs from Check payroll CSV data.
+
+**Key features:**
+- **CSV upload** — accepts Check payroll journal exports
+- **Company selection** — filters by company, shows employee/payroll summary
+- **PDF generation** — produces two reports per company:
+  - **Journal Entry** with per-employee debits/credits
+  - **General Ledger Report** with account-level transactions
+- **Branding** — Workstream logo (via pdf-lib), blue accent bar, page numbers, footer attribution
+- **Batch export** — generate all companies at once
+
+**Tech stack:** jsPDF + autoTable for table layout, pdf-lib for PNG logo embedding (jsPDF can't decode the logo PNG).
+
+**Why:** Clients need GL PDFs formatted for QuickBooks/ADP import. Previously manual.
+
+---
+
 ## Design Updates
 
 **Colors:**
@@ -61,18 +80,22 @@
 **New:**
 - `built-in-reports-accordion/page.tsx` - Original accordion view preserved
 - `built-in-reports-cards/page.tsx` - 3D card grouped view
+- `reporting/ledger-export/page.tsx` - GL PDF export from Check payroll CSV
+- `public/workstream_logo.png` - Workstream logo for PDF branding
 
 **Updated:**
 - `built-in-reports/page.tsx` - New sidebar layout
 - `dashboards/page.tsx` - Tab interface
 - `globals.css` - Workstream blue colors
-- `Sidebar.tsx` - Reporting dropdown with 3 view options
+- `Sidebar.tsx` - Reporting dropdown with Ledger Export nav item
 
 **Unchanged:**
 - `custom-reports/page.tsx` - Remains as iframe embed
 
-**New Dependency:**
+**New Dependencies:**
 - `lucide-react` - Icon library
+- `jspdf` + `jspdf-autotable` - PDF table generation
+- `pdf-lib` - PNG logo embedding in PDFs
 
 ---
 
@@ -87,6 +110,7 @@
 - `/reporting/built-in-reports-accordion` - Original accordion view
 - `/reporting/custom-reports` - Custom reports (iframe)
 - `/reporting/dashboards` - Dashboard tabs
+- `/reporting/ledger-export` - GL PDF export
 
 ---
 
