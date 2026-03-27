@@ -52,7 +52,7 @@ export default function Dashboards() {
         <div className="px-8 pt-6 pb-0">
           <div className="mb-6">
             <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">Dashboards</h1>
-            <p className="mt-1 text-sm text-gray-500">Real-time insights and analytics across your organization</p>
+            <p className="mt-1 text-gray-500">Real-time insights and analytics across your organization</p>
           </div>
 
           {/* Tab Navigation */}

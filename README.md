@@ -39,7 +39,9 @@ npm start
 | `/reporting/built-in-reports-accordion` | Original accordion view |
 | `/reporting/custom-reports` | Custom reports (iframe embed) |
 | `/reporting/dashboards` | Tab-based dashboards (Hiring, Payroll, Onboarding, WorkstreamIQ) |
-| `/reporting/ledger-export` | GL PDF export from Check payroll CSV |
+| `/reporting/ledger-export` | GL PDF/Excel export from Check payroll CSV |
+| `/api/payroll/companies` | Snowflake API — list companies and paydays |
+| `/api/payroll/gl-data` | Snowflake API — per-employee earnings, taxes, net pay |
 
 ## Features
 
@@ -50,13 +52,13 @@ Collapsible sidebar with category navigation, star favorites, search (⌘K), sor
 Tab-based interface for switching between Hiring, Payroll, Onboarding, and WorkstreamIQ dashboards. No page reloads.
 
 ### Ledger Export
-Upload a Check payroll CSV, select a company, download a branded GL PDF. Produces two sections per company:
-- **Journal Entry** — per-employee debits/credits
-- **General Ledger Report** — account-level transactions
+Two-section page for generating GL reports from Check payroll data:
+- **Account Mapping** (Settings) — configure which GL accounts each pay type maps to. Global defaults apply to all companies; per-company overrides are saved separately in localStorage.
+- **Generate** (Upload → Select → Export) — upload a CSV, select companies, preview the ledger, and download as PDF or Excel. Multi-company exports bundle into a ZIP.
 
-PDFs include Workstream logo, blue accent bar, page numbers, and footer attribution. Supports batch export for all companies at once.
+PDFs include Workstream logo, blue accent bar, page numbers, and footer attribution.
 
-**Tech:** jsPDF + autoTable for table layout, pdf-lib for PNG logo embedding.
+**Tech:** jsPDF + autoTable for PDF, xlsx (SheetJS) for Excel, jszip for multi-file bundling, pdf-lib for PNG logo embedding. Business logic is modularized under `src/app/reporting/ledger-export/_lib/`.
 
 ## Dependencies
 
@@ -67,12 +69,17 @@ PDFs include Workstream logo, blue accent bar, page numbers, and footer attribut
 | `lucide-react` | Icons |
 | `jspdf` + `jspdf-autotable` | PDF table generation |
 | `pdf-lib` | PNG logo embedding in PDFs |
+| `xlsx` | Excel export (SheetJS) |
+| `jszip` | ZIP bundling for multi-company exports |
+| `snowflake-sdk` | Snowflake warehouse queries (API routes) |
 
 ## Key Files
 
 | File | Purpose |
 |---|---|
-| `src/app/reporting/ledger-export/page.tsx` | GL PDF export page |
+| `src/app/reporting/ledger-export/page.tsx` | Ledger Export page (UI) |
+| `src/app/reporting/ledger-export/_lib/` | Business logic modules (types, CSV parser, transform, PDF/Excel generators, ZIP bundler, account storage) |
+| `src/lib/snowflake.ts` | Snowflake connection + query helper |
 | `src/app/reporting/built-in-reports/page.tsx` | Sidebar report browser |
 | `src/app/reporting/dashboards/page.tsx` | Dashboard tabs |
 | `src/components/Sidebar.tsx` | Main nav sidebar |

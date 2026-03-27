@@ -36,13 +36,15 @@ export default function AIReporting() {
   };
 
   return (
-    <div className="p-8 min-h-full flex flex-col">
-      {/* Page Title */}
-      <h1 className="text-2xl font-bold text-gray-800">AI Reporting</h1>
-      <p className="mt-2 text-gray-600">AI-powered insights and analytics</p>
+    <div className="h-full flex flex-col">
+      {/* Header */}
+      <div className="flex-shrink-0 bg-white border-b border-gray-200 px-8 py-6">
+        <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">AI Reporting</h1>
+        <p className="mt-1 text-gray-500">AI-powered insights and analytics</p>
+      </div>
 
       {/* Centered Chat Interface */}
-      <div className="flex-1 flex flex-col items-center justify-center -mt-16">
+      <div className="flex-1 flex flex-col items-center justify-center">
         <div className="w-full max-w-2xl text-center">
           {/* Chat Heading */}
           <h2 className="text-3xl font-semibold text-gray-900 mb-8">

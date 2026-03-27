@@ -338,12 +338,14 @@ export default function BuiltInReports() {
   }, [groupedReports, pinnedCategories]);
 
   return (
-    <div className="p-8 lg:p-12 min-h-full w-full">
-      {/* Page Header */}
-      <div className="mb-10">
+    <div className="h-full flex flex-col">
+      {/* Header */}
+      <div className="flex-shrink-0 bg-white border-b border-gray-200 px-8 py-6">
         <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">Built-in Reports (Grouped View)</h1>
         <p className="mt-1 text-gray-500">Browse reports organized by category</p>
       </div>
+
+      <div className="flex-1 overflow-y-auto bg-gray-100 px-8 py-6">
 
       {/* Stats Summary */}
       <div className="flex gap-8 mb-8 text-sm text-gray-500">
@@ -601,6 +603,7 @@ export default function BuiltInReports() {
           </button>
         </div>
       )}
+      </div>
     </div>
   );
 }

@@ -106,7 +106,7 @@ interface NavItemProps {
 const NavItem = ({ href, icon, label, isActive, isCollapsed, badge }: NavItemProps) => (
   <Link
     href={href}
-    className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors duration-200 ${
+    className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors duration-200 ${
       isActive 
         ? 'bg-gray-600/50 text-white' 
         : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
@@ -139,7 +139,7 @@ interface SubNavItemProps {
 const SubNavItem = ({ href, label, isActive, isCollapsed }: SubNavItemProps) => (
   <Link
     href={href}
-    className={`flex items-center pl-12 pr-4 py-2.5 rounded-lg transition-colors duration-200 ${
+    className={`flex items-center pl-12 pr-4 py-2 rounded-lg transition-colors duration-200 ${
       isActive 
         ? 'bg-gray-600/50 text-white' 
         : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
@@ -158,15 +158,16 @@ export default function Sidebar() {
     <aside 
       className={`${
         isCollapsed ? 'w-20' : 'w-64'
-      } min-h-screen bg-[#2d3748] flex flex-col transition-all duration-300`}
+      } h-full bg-[#2d3748] flex flex-col transition-all duration-300 overflow-hidden`}
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-4">
-        <div 
-          className="w-10 h-10 rounded-lg flex items-center justify-center shadow-md"
-          style={{ backgroundColor: 'var(--workstream-blue)' }}
-        >
-          <span className="text-white text-xl font-bold">≈</span>
+      <div className={`flex items-center p-4 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
+        <div className="w-10 h-10 rounded-lg overflow-hidden shadow-md flex-shrink-0">
+          <img
+            src="/workstream_favicon.png"
+            alt="Workstream"
+            className="w-full h-full object-cover"
+          />
         </div>
         {!isCollapsed && (
           <button 
@@ -179,7 +180,7 @@ export default function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 space-y-1">
+      <nav className="flex-1 px-4 pt-4 pb-8 space-y-0.5">
         <NavItem 
           href="/" 
           icon={<HomeIcon />} 
@@ -214,7 +215,7 @@ export default function Sidebar() {
         <div>
           <button
             onClick={() => setReportingOpen(!reportingOpen)}
-            className={`w-full flex items-center justify-between px-4 py-2.5 rounded-lg transition-colors duration-200 ${
+            className={`w-full flex items-center justify-between px-4 py-2 rounded-lg transition-colors duration-200 ${
               pathname.startsWith('/reporting') 
                 ? 'text-white' 
                 : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
@@ -265,7 +266,7 @@ export default function Sidebar() {
 
         {/* Hiring Section */}
         {!isCollapsed && (
-          <div className="pt-6 pb-2 px-4">
+          <div className="pt-4 pb-1 px-4">
             <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
               Hiring
             </span>
@@ -303,7 +304,7 @@ export default function Sidebar() {
 
         {/* Team Management Section */}
         {!isCollapsed && (
-          <div className="pt-6 pb-2 px-4">
+          <div className="pt-4 pb-1 px-4">
             <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
               Team Management
             </span>
@@ -331,19 +332,18 @@ export default function Sidebar() {
           isActive={pathname === '/documents'} 
           isCollapsed={isCollapsed}
         />
+        {/* Expand button when collapsed */}
+        {isCollapsed && (
+          <button
+            onClick={() => setIsCollapsed(false)}
+            className="px-4 py-3 text-gray-400 hover:text-white transition-colors"
+          >
+            <svg className="w-5 h-5 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+            </svg>
+          </button>
+        )}
       </nav>
-
-      {/* Expand button when collapsed */}
-      {isCollapsed && (
-        <button 
-          onClick={() => setIsCollapsed(false)}
-          className="p-4 text-gray-400 hover:text-white transition-colors"
-        >
-          <svg className="w-5 h-5 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
-          </svg>
-        </button>
-      )}
     </aside>
   );
 }
